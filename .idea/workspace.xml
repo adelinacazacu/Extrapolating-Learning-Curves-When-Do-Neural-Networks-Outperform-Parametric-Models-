@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="98165a17-ac4a-41bd-ab25-fb4582b7fa7b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/LCDB11_ACC_265_noFS_raw_compress.hdf5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiment1/evaluation_parametric_vs_lcpfn.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiment1/training-pfn-lcdb11-experiment1.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiment2/experiment2_shape_evaluation_parametric_vs_lcpfn.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiment2/training-pfn-lcdb11-experiment2.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LCDB11.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training_pfn_lcdb11.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +47,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/adeli/PycharmProjects/demo-LCDB1.1/experiment2",
+    "last_opened_file_path": "C:/Users/adeli/OneDrive/Desktop/facultate/4th year/Research Project/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -100,6 +93,7 @@
       <workItem from="1750082544689" duration="9790000" />
       <workItem from="1750335303318" duration="8037000" />
       <workItem from="1750415763144" duration="48491000" />
+      <workItem from="1750613124656" duration="466000" />
     </task>
     <servers />
   </component>

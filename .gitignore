@@ -4,3 +4,4 @@ lcpfn/__pycache__/*
 *.pyc
 *.pt
 *.hdf5
+.idea
