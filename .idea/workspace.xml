@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="98165a17-ac4a-41bd-ab25-fb4582b7fa7b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/LCDB11_ACC_265_noFS_raw_compress.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/experiment1/evaluation_parametric_vs_lcpfn.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/experiment1/training-pfn-lcdb11-experiment1.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/experiment2/experiment2_shape_evaluation_parametric_vs_lcpfn.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/experiment2/training-pfn-lcdb11-experiment2.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LCDB11.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training_pfn_lcdb11.ipynb" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="Jupyter Notebook" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2w3lnYZ1kjw877qTupBp03RMv76" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/adeli/PycharmProjects/demo-LCDB1.1/experiment2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\adeli\PycharmProjects\demo-LCDB1.1\experiment2" />
+      <recent name="C:\Users\adeli\PycharmProjects\demo-LCDB1.1" />
+      <recent name="C:\Users\adeli\PycharmProjects\demo-LCDB1.1\trained_models" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\adeli\PycharmProjects\demo-LCDB1.1\experiment1" />
+      <recent name="C:\Users\adeli\PycharmProjects\demo-LCDB1.1\trained_models" />
+      <recent name="C:\Users\adeli\PycharmProjects\demo-LCDB1.1\visuals - experiment 2\200 samples" />
+      <recent name="C:\Users\adeli\PycharmProjects\demo-LCDB1.1\experiment2" />
+      <recent name="C:\Users\adeli\PycharmProjects\demo-LCDB1.1" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="98165a17-ac4a-41bd-ab25-fb4582b7fa7b" name="Changes" comment="" />
+      <created>1745278305627</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1745278305627</updated>
+      <workItem from="1745278306835" duration="5895000" />
+      <workItem from="1745307761055" duration="1001000" />
+      <workItem from="1745423572462" duration="8579000" />
+      <workItem from="1745851894809" duration="21767000" />
+      <workItem from="1746528977711" duration="23132000" />
+      <workItem from="1747001548147" duration="74801000" />
+      <workItem from="1747651909840" duration="3371000" />
+      <workItem from="1747932692246" duration="12777000" />
+      <workItem from="1748028892469" duration="1918000" />
+      <workItem from="1748434696075" duration="61497000" />
+      <workItem from="1749570054746" duration="4103000" />
+      <workItem from="1750082544689" duration="9790000" />
+      <workItem from="1750335303318" duration="8037000" />
+      <workItem from="1750415763144" duration="48491000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
