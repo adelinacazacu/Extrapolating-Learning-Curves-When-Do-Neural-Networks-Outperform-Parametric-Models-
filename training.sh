@@ -24,7 +24,7 @@ export PYTHONDONTWRITEBYTECODE=abc
 export PYTHONUNBUFFERED=TRUE
 
 
-cd /tudelft.net/staff-bulk/ewi/insy/PRLab/Students/adelina/
+cd /tudelft.net/staff-bulk/ewi/insy/PRLab/Students/adelina/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-
 srun python test.py --seed $SLURM_ARRAY_TASK_ID
 
 conda deactivate
