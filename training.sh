@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --partition=general --qos=medium
-#SBATCH --time=6:00:00
+#SBATCH --partition=general --qos=short
+#SBATCH --time=4:00:00
 #SBATCH --mincpus=2
 #SBATCH --mem=20000
-#SBATCH --gres=gpu:1
+
 #SBATCH --job-name=trainpfn
-#SBATCH --output=logs/out_trainpfn_%A_%a.txt
-#SBATCH --error=logs/err_trainpfn_%A_%a.txt
+#SBATCH --output=out_trainpfn_%A_%a.txt
+#SBATCH --error=err_trainpfn_%A_%a.txt
 #SBATCH --array=0-4
 
 # ------------------------------------------------------------------------------
@@ -25,6 +25,6 @@ export PYTHONUNBUFFERED=TRUE
 
 
 cd /tudelft.net/staff-bulk/ewi/insy/PRLab/Students/adelina/
-srun python .py --seed $SLURM_ARRAY_TASK_ID
+srun python test.py --seed $SLURM_ARRAY_TASK_ID
 
 conda deactivate
