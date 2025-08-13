@@ -51,9 +51,12 @@ def train(
     decoder=None,
     extra_prior_kwargs_dict={},
     scheduler=get_cosine_schedule_with_warmup,
-    load_weights_from_this_state_dict=None,
+    load_pretrained_model=False,
+    pretrained_model_path=None, 
+    # load_weights_from_this_state_dict=None,
     validation_period=10,
     single_eval_pos_gen=None,
+    seq_len_gen=None, 
     bptt_extra_samples=None,
     gpu_device="cuda:0",
     aggregate_k_gradients=1,
@@ -64,9 +67,8 @@ def train(
     initialize_with_model=None,
     train_mixed_precision=False,
     saving_period=10,
-    checkpoint_file=None,
+    checkpoint_path=None,
     load_optimizer_from_this_state_dict=None,
-    output_path=None,
     **model_extra_args,
 ):
     device = gpu_device if torch.cuda.is_available() else "cpu:0"
@@ -80,10 +82,11 @@ def train(
 
     def eval_pos_seq_len_sampler():
         single_eval_pos = single_eval_pos_gen()
+        current_bptt = seq_len_gen() if callable(seq_len_gen) else bptt
         if bptt_extra_samples:
-            return single_eval_pos, single_eval_pos + bptt_extra_samples
+            return single_eval_pos, current_bptt + bptt_extra_samples
         else:
-            return single_eval_pos, bptt
+            return single_eval_pos, current_bptt
 
     dl = priordataloader_class(
         num_steps=steps_per_epoch,
@@ -115,27 +118,31 @@ def train(
         n_out = criterion.weight.shape[0]
     else:
         n_out = 1
-    model = TransformerModel(
-        encoder,
-        n_out,
-        emsize,
-        nhead,
-        nhid,
-        nlayers,
-        dropout,
-        style_encoder=style_encoder,
-        y_encoder=y_encoder_generator(1, emsize),
-        input_normalization=input_normalization,
-        pos_encoder=(
-            pos_encoder_generator or positional_encodings.NoPositionalEncoding
-        )(emsize, bptt * 2),
-        decoder=decoder,
-        init_method=initializer,
-        **model_extra_args,
-    )
+    if load_pretrained_model: 
+        model = torch.load(pretrained_model_path, weights_only=False)
+        print(f"Load model pretrained from: {pretrained_model_path}")
+    else:
+        model = TransformerModel(
+            encoder,
+            n_out,
+            emsize,
+            nhead,
+            nhid,
+            nlayers,
+            dropout,
+            style_encoder=style_encoder,
+            y_encoder=y_encoder_generator(1, emsize),
+            input_normalization=input_normalization,
+            pos_encoder=(
+                pos_encoder_generator or positional_encodings.NoPositionalEncoding
+            )(emsize, bptt * 2),
+            decoder=decoder,
+            init_method=initializer,
+            **model_extra_args,
+        )
     model.criterion = criterion
-    if load_weights_from_this_state_dict is not None:
-        model.load_state_dict(load_weights_from_this_state_dict)
+    # if load_weights_from_this_state_dict is not None:
+    #     model.load_state_dict(load_weights_from_this_state_dict)
     if initialize_with_model is not None:
         model.init_from_small_model(initialize_with_model)
 
@@ -298,26 +305,22 @@ def train(
             else:
                 val_score = None
 
-            if epoch % saving_period == 0 and checkpoint_file is not None:
-                checkpoint = {
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "epoch": epoch,
-                }
-                torch.save(checkpoint, checkpoint_file)
-                full_model_path = checkpoint_file.split(".")[0] + "_full_model.pt"
-                torch.save(model, full_model_path)
+            if epoch % saving_period == 0:
+                torch.save(model.to("cpu"), f"{checkpoint_path}/model_epoch{epoch}.pth")
+                model.to(device)
+
 
             if verbose:
-                print("-" * 89)
+                print("-" * 70)
                 print(
-                    f"| end of epoch {epoch:3d} | time: {(time.time() - epoch_start_time):5.2f}s | mean loss {total_loss:5.2f} | "
-                    f"pos losses {','.join([f'{l:5.2f}' for l in total_positional_losses])}, lr {scheduler.get_last_lr()[0]}"
-                    f" data time {time_to_get_batch:5.2f} step time {step_time:5.2f}"
-                    f" forward time {forward_time:5.2f}"
+                    # f"| end of epoch {epoch:3d} | time: {(time.time() - epoch_start_time):5.2f}s | mean loss NLL {total_loss:5.2f} | "
+                    f"| end of epoch {epoch:3d} | mean loss NLL {total_loss:5.2f} "
+                    f"| lr {scheduler.get_last_lr()[0]} | pos losses {','.join([f'{l:5.2f}' for l in total_positional_losses])} "
+                    # f" data time {time_to_get_batch:5.2f} step time {step_time:5.2f}"
+                    # f" forward time {forward_time:5.2f}"
                     + (f"val score {val_score}" if val_score is not None else "")
                 )
-                print("-" * 89)
+                # print("-" * 89)
 
             # stepping with wallclock time based scheduler
             if epoch_callback is not None and rank == 0:
@@ -330,7 +333,4 @@ def train(
         if isinstance(model, torch.nn.parallel.DistributedDataParallel):
             model = model.module
             dl = None
-        if output_path is not None:
-            torch.save(model.to("cpu"), output_path)
-            print("Checkpoint stored at ", output_path)
-        return total_loss, total_positional_losses, model.to("cpu"), dl
+        return total_loss, total_positional_losses, model.to("cpu"), dl, list_losses

@@ -5,3 +5,4 @@ lcpfn/__pycache__/*
 *.pt
 *.hdf5
 .idea
+myEnv
