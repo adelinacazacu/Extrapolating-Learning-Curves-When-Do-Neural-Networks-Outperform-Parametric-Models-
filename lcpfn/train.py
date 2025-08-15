@@ -314,7 +314,7 @@ def train(
                 print("-" * 70)
                 print(
                     # f"| end of epoch {epoch:3d} | time: {(time.time() - epoch_start_time):5.2f}s | mean loss NLL {total_loss:5.2f} | "
-                    f"| end of epoch {epoch:3d} | mean loss NLL {total_loss:5.2f} "
+                    f"| end of epoch {epoch:3d} | mean loss NLL {total_loss:5.2f} | time: {(time.time() - epoch_start_time):5.2f}s"
                     f"| lr {scheduler.get_last_lr()[0]} | pos losses {','.join([f'{l:5.2f}' for l in total_positional_losses])} "
                     # f" data time {time_to_get_batch:5.2f} step time {step_time:5.2f}"
                     # f" forward time {forward_time:5.2f}"
