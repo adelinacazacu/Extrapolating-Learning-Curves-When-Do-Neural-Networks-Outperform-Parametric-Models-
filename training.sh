@@ -3,6 +3,7 @@
 #SBATCH --time=4:00:00
 #SBATCH --mincpus=2
 #SBATCH --mem=20000
+#SBATCH --gres=gpu:1
 
 #SBATCH --job-name=trainpfn
 #SBATCH --output=out_trainpfn_%A_%a.txt
