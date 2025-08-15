@@ -7,7 +7,7 @@
 #SBATCH --job-name=trainpfn
 #SBATCH --output=out_trainpfn_%A_%a.txt
 #SBATCH --error=err_trainpfn_%A_%a.txt
-#SBATCH --array=0-4
+#SBATCH --array=0-0
 
 # ------------------------------------------------------------------------------
 # Setting up the environment
@@ -18,13 +18,13 @@ module use /opt/insy/modulefiles
 module load cuda/11.3
 module load miniconda/3.9
 
-conda activate /tudelft.net/staff-bulk/ewi/insy/PRLab/Students/adelina/env/lcdb-pfn
+conda activate /tudelft.net/staff-umbrella/lcdb2/adelina/env/lcdb-pfn
 
 export PYTHONDONTWRITEBYTECODE=abc
 export PYTHONUNBUFFERED=TRUE
 
 
-cd /tudelft.net/staff-bulk/ewi/insy/PRLab/Students/adelina/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-
-srun python test.py --seed $SLURM_ARRAY_TASK_ID
+cd /tudelft.net/staff-umbrella/lcdb2/adelina/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-
+srun python training-pfn-lcdb11-experiment1.py --seed $SLURM_ARRAY_TASK_ID
 
 conda deactivate

@@ -435,7 +435,7 @@ torch.cuda.manual_seed(SEED)
 torch.manual_seed(SEED)
 
 # local training
-SEQ_LEN = 300
+SEQ_LEN = 140
 EMSIZE = 512
 NLAYERS = 12
 NUM_BORDERS = 1000
