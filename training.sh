@@ -25,6 +25,6 @@ export PYTHONUNBUFFERED=TRUE
 
 
 cd /tudelft.net/staff-umbrella/lcdb2/adelina/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-
-srun python training-pfn-lcdb11-experiment1.py --seed $SLURM_ARRAY_TASK_ID
+srun python experiment1/training-pfn-lcdb11-experiment1.py --seed $SLURM_ARRAY_TASK_ID
 
 conda deactivate
