@@ -22,7 +22,7 @@ conda activate /tudelft.net/staff-umbrella/lcdb2/adelina/env/lcdb-pfn
 
 export PYTHONDONTWRITEBYTECODE=abc
 export PYTHONUNBUFFERED=TRUE
-
+export PYTHONPATH="${PYTHONPATH}:${PWD}"
 
 cd /tudelft.net/staff-umbrella/lcdb2/adelina/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-
 srun python experiment1/training-pfn-lcdb11-experiment1.py --seed $SLURM_ARRAY_TASK_ID
