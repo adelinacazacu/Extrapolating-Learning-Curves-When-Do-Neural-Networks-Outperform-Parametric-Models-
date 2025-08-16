@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=general --qos=medium
-#SBATCH --time=8:00:00
+#SBATCH --time=16:00:00
 #SBATCH --mincpus=2
 #SBATCH --mem=20000
 #SBATCH --gres=gpu:1
