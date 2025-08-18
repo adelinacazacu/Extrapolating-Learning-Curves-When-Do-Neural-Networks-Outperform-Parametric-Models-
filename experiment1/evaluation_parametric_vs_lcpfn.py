@@ -139,7 +139,7 @@ print(f"UDUL Testing set size: {len(test_UDUL_curves)} curves")
 
 
 model_name = 'lcpfn_model_exp1_140_512_12_1000_0.0001_100_1000.pth'
-model = torch.load(f'../trained_models/{model_name}', weights_only=False)
+model = torch.load(f'../trained_models/exp1_140_512_12_1000_0.0001_100_1000/{model_name}', weights_only=False)
 model.eval()
 
 
