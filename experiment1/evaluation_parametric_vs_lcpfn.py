@@ -37,39 +37,6 @@ warnings.filterwarnings('ignore')
 import lcpfn
 from lcpfn import bar_distribution, encoders, train, utils
 
-import time
-
-def cpu_intensive_task(n):
-    # Simulate scipy curve_fit workload
-    x = np.random.random(1000)
-    for _ in range(n):
-        np.linalg.svd(np.outer(x, x))
-    return n
-
-# Test parallelization
-print("Testing parallelization...")
-start_time = time.time()
-
-# Sequential
-sequential_times = []
-for i in range(4):
-    start = time.time()
-    cpu_intensive_task(1000)
-    sequential_times.append(time.time() - start)
-
-seq_total = sum(sequential_times)
-print(f"Sequential (4 tasks): {seq_total:.2f}s")
-
-# Parallel
-start = time.time()
-with ProcessPoolExecutor(max_workers=4) as executor:
-    list(executor.map(cpu_intensive_task, [1000] * 4))
-parallel_total = time.time() - start
-
-print(f"Parallel (4 workers): {parallel_total:.2f}s")
-print(f"Speedup: {seq_total/parallel_total:.2f}x")
-
-
 # In[33]:
 
 
