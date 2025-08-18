@@ -12,9 +12,9 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing as mp
 from functools import partial
 
-os.environ['OMP_NUM_THREADS'] = '8'
-os.environ['MKL_NUM_THREADS'] = '8'
-os.environ['NUMBA_NUM_THREADS'] = '8'
+os.environ['OMP_NUM_THREADS'] = '16'
+os.environ['MKL_NUM_THREADS'] = '16'
+os.environ['NUMBA_NUM_THREADS'] = '16'
 
 import h5py
 import numpy as np
@@ -724,7 +724,7 @@ else:
     random.seed(42)
     np.random.seed(42)
     torch.manual_seed(42)
-    df = collect_metrics_parallel(sample_size=sample_size, n_workers=6)  # Use 6 workers for 8 CPU allocation
+    df = collect_metrics_parallel(sample_size=sample_size, n_workers=14)  # Use 14 workers for 16 CPU allocation
     df.to_csv(file_path, index=False)  # Save results
 
 
