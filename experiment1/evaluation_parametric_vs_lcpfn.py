@@ -47,7 +47,7 @@ LEARNER_ZOO = {0: 'SVC_linear', 1: 'SVC_poly', 2: 'SVC_rbf', 3: 'SVC_sigmoid', 4
 ANCHOR_SIZE = np.ceil(16 * 2 ** ((np.arange(137)) / 8)).astype(int)
 
 ### load data: validation accuracy
-lc_data = h5py.File(Path.cwd() / '../LCDB11_ACC_265_noFS_raw_compress.hdf5', 'r')['accuracy'][...][:,:,:,:,:,1]
+lc_data = h5py.File(Path.cwd() / 'LCDB11_ACC_265_noFS_raw_compress.hdf5', 'r')['accuracy'][...][:,:,:,:,:,1]
 
 mean_valid_lc_nofs =np.nanmean(lc_data, axis=(2, 3))
 
