@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --partition=general --qos=medium
-#SBATCH --time=8:00:00
+#SBATCH --partition=general --qos=short
+#SBATCH --time=4:00:00
 #SBATCH --mincpus=8
-#SBATCH --mem=40000
+#SBATCH --mem=32000
 #SBATCH --gres=gpu:1
 
-#SBATCH --job-name=parallel_evaluation_exp1
-#SBATCH --output=out_trainpfn_%A_%a.txt
-#SBATCH --error=err_trainpfn_%A_%a.txt
+#SBATCH --job-name=paralleleval
+#SBATCH --output=out_paralleleval_%A_%a.txt
+#SBATCH --error=err_paralleleval_%A_%a.txt
 #SBATCH --array=0-0
 
 # ------------------------------------------------------------------------------
