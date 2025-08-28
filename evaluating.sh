@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --partition=general --qos=short
 #SBATCH --time=4:00:00
-#SBATCH --mincpus=1
+#SBATCH --mincpus=16
 #SBATCH --mem=48000
 #SBATCH --gres=gpu:1
 
-#SBATCH --job-name=training
-#SBATCH --output=out_training_%A_%a.txt
-#SBATCH --error=err_training_%A_%a.txt
+#SBATCH --job-name=paralleleval
+#SBATCH --output=out_paralleleval_%A_%a.txt
+#SBATCH --error=err_paralleleval_%A_%a.txt
 #SBATCH --array=0-0
 
 # ------------------------------------------------------------------------------
@@ -26,6 +26,6 @@ export PYTHONUNBUFFERED=TRUE
 export PYTHONPATH="${PYTHONPATH}:${PWD}"
 
 cd /tudelft.net/staff-umbrella/lcdb2/adelina/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-
-srun python experiment2/training-pfn-lcdb11-experiment2.py --seed $SLURM_ARRAY_TASK_ID
+srun python experiment1/evaluation_parametric_vs_lcpfn.py --seed $SLURM_ARRAY_TASK_ID
 
 conda deactivate
