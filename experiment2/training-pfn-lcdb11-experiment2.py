@@ -44,7 +44,7 @@ LEARNER_ZOO = {0: 'SVC_linear', 1: 'SVC_poly', 2: 'SVC_rbf', 3: 'SVC_sigmoid', 4
 ANCHOR_SIZE = np.ceil(16 * 2 ** ((np.arange(137)) / 8)).astype(int)
 
 ### load data: validation accuracy
-lc_data = h5py.File('../LCDB11_ACC_265_noFS_raw_compress.hdf5', 'r')['accuracy'][...][:,:,:,:,:,1]
+lc_data = h5py.File('LCDB11_ACC_265_noFS_raw_compress.hdf5', 'r')['accuracy'][...][:,:,:,:,:,1]
 
 mean_valid_lc_nofs =np.nanmean(lc_data, axis=(2, 3))
 
@@ -416,8 +416,8 @@ result = train_lcdbpfn(
 
 
 model = result[2]
-os.makedirs(f'../trained_models/exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}', exist_ok=True)
-torch.save(model, f'../trained_models/exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}/lcpfn_model_exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}.pth')
+os.makedirs(f'trained_models/exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}', exist_ok=True)
+torch.save(model, f'trained_models/exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}/lcpfn_model_exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}.pth')
 print("Model saved successfully!")
 print(model)
 
@@ -427,7 +427,7 @@ print(model)
 # In[10]:
 
 
-model = torch.load(f'../trained_models/exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}/lcpfn_model_exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}.pth', weights_only=False)
+model = torch.load(f'trained_models/exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}/lcpfn_model_exp2_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}.pth', weights_only=False)
 model.eval()
 
 

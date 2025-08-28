@@ -204,7 +204,7 @@ def save_training_test_data(train_data, test_data_KDKL, test_data_UD, test_data_
                            train_learner_indices, test_learner_indices):
 
     # Create directory if it doesn't exist
-    save_dir = f'../trained_models/exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}'
+    save_dir = f'trained_models/exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}'
     os.makedirs(save_dir, exist_ok=True)
 
     saved_files = []
@@ -462,8 +462,8 @@ result = train_lcdbpfn(
 
 
 model = result[2]
-os.makedirs(f'../trained_models/exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}', exist_ok=True)
-torch.save(model, f'../trained_models/exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}/lcpfn_model_exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}.pth')
+os.makedirs(f'trained_models/exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}', exist_ok=True)
+torch.save(model, f'trained_models/exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}/lcpfn_model_exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}.pth')
 print("Model saved successfully!")
 
 saved_files = save_training_test_data(
@@ -486,7 +486,7 @@ print(model)
 # In[25]:
 
 
-model = torch.load(f'../trained_models/exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}/lcpfn_model_exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}.pth', weights_only=False)
+model = torch.load(f'trained_models/exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}/lcpfn_model_exp1_{SEQ_LEN}_{EMSIZE}_{NLAYERS}_{NUM_BORDERS}_{LR}_{BATCH_SIZE}_{EPOCH}.pth', weights_only=False)
 model.eval()
 
 
