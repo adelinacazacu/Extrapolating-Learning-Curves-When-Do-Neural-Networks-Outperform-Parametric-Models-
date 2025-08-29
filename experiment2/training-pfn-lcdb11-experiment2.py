@@ -379,7 +379,7 @@ def train_lcdbpfn(get_batch_func, seq_len, emsize, nlayers, num_borders, lr, bat
         single_eval_pos_gen=lambda: LCDB_samplers().single_eval_pos(),
         aggregate_k_gradients=1,
         nhid=(emsize * 2),
-        steps_per_epoch=100,
+        steps_per_epoch=50,
         train_mixed_precision=False,
         checkpoint_path = checkpoint_path
     )
@@ -402,10 +402,10 @@ EMSIZE = 512
 NLAYERS = 12
 NUM_BORDERS = 1000
 LR = 0.0001
-BATCH_SIZE = 100
-EPOCH = 1000
+BATCH_SIZE = 250
+EPOCH = 800
 
-# batch size 100 x step size 100 x 1000 epochs = 10 million augmented curves will be generated during the batch creation in training
+# batch size 250 x step size 50 x 800 epochs = 10 million augmented curves will be generated during the batch creation in training
 
 result = train_lcdbpfn(
     get_batch_func = get_batch_lcdb_real,
