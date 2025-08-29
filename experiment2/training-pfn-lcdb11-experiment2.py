@@ -28,7 +28,7 @@ if main_path not in sys.path:
 
 print(f"Project path: {main_path}")
 
-TRAINING_NAME = 'training-experiment1'
+TRAINING_NAME = 'training-experiment2'
 experiments_path = f"{main_path}/{TRAINING_NAME}"
 os.makedirs(experiments_path, exist_ok=True)
 
