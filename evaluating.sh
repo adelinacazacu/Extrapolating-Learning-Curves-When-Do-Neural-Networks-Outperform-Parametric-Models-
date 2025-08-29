@@ -10,6 +10,9 @@
 #SBATCH --error=err_paralleleval_%A_%a.txt
 #SBATCH --array=0-0
 
+ulimit -n 65536
+echo "File descriptor limit set to: $(ulimit -n)"
+
 # ------------------------------------------------------------------------------
 # Setting up the environment
 # ------------------------------------------------------------------------------

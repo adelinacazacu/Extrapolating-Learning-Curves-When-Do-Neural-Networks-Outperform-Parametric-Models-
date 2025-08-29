@@ -138,7 +138,7 @@ print(f"UDUL Testing set size: {len(test_UDUL_curves)} curves")
 
 
 model_name = 'lcpfn_model_exp1_140_512_12_1000_0.0001_100_1000.pth'
-model = torch.load(f'../trained_models/exp1_140_512_12_1000_0.0001_100_1000/{model_name}', weights_only=False)
+model = torch.load(f'trained_models/exp1_140_512_12_1000_0.0001_100_1000/{model_name}', weights_only=False)
 model.eval()
 
 
@@ -240,6 +240,80 @@ def wbl4(n, a, b, c, d):
 def pow4(n, a, b, c, d):
     return a - b * (d + n)**(-c)
 
+def mmf4_jacobian(n, a, b, c, d):
+    """
+    Jacobian for MMF4: f(n) = (a * b + c * n^d) / (b + n^d)
+    Returns partial derivatives w.r.t. [a, b, c, d]
+    """
+    n_d = n**d
+    denominator = b + n_d
+
+    # ∂f/∂a = b / (b + n^d)
+    da = b / denominator
+
+    # ∂f/∂b = (a * (b + n^d) - (a * b + c * n^d)) / (b + n^d)^2
+    #        = (a * n^d - c * n^d) / (b + n^d)^2
+    db = (a - c) * n_d / (denominator**2)
+
+    # ∂f/∂c = n^d / (b + n^d)
+    dc = n_d / denominator
+
+    # ∂f/∂d = (c * n^d * ln(n) * (b + n^d) - (a * b + c * n^d) * n^d * ln(n)) / (b + n^d)^2
+    #        = n^d * ln(n) * (c * b - a * b) / (b + n^d)^2
+    log_n = np.log(n)
+    log_n = np.where(n > 0, log_n, 0)  # Handle n=0 case
+    dd = n_d * log_n * b * (c - a) / (denominator**2)
+
+    return np.column_stack([da, db, dc, dd])
+
+def wbl4_jacobian(n, a, b, c, d):
+    """
+    Jacobian for WBL4: f(n) = c - b * exp(-a * n^d)
+    Returns partial derivatives w.r.t. [a, b, c, d]
+    """
+    n_d = n**d
+    exp_term = np.exp(-a * n_d)
+
+    # ∂f/∂a = b * n^d * exp(-a * n^d)
+    da = b * n_d * exp_term
+
+    # ∂f/∂b = -exp(-a * n^d)
+    db = -exp_term
+
+    # ∂f/∂c = 1
+    dc = np.ones_like(n)
+
+    # ∂f/∂d = b * a * n^d * ln(n) * exp(-a * n^d)
+    log_n = np.log(n)
+    log_n = np.where(n > 0, log_n, 0)
+    dd = b * a * n_d * log_n * exp_term
+
+    return np.column_stack([da, db, dc, dd])
+
+def pow4_jacobian(n, a, b, c, d):
+    """
+    Jacobian for POW4: f(n) = a - b * (d + n)^(-c)
+    Returns partial derivatives w.r.t. [a, b, c, d]
+    """
+    d_plus_n = d + n
+    power_term = d_plus_n**(-c)
+
+    # ∂f/∂a = 1
+    da = np.ones_like(n)
+
+    # ∂f/∂b = -(d + n)^(-c)
+    db = -power_term
+
+    # ∂f/∂c = b * (d + n)^(-c) * ln(d + n)
+    log_term = np.log(d_plus_n)
+    log_term = np.where(d_plus_n > 0, log_term, 0)
+    dc = b * power_term * log_term
+
+    # ∂f/∂d = b * c * (d + n)^(-c-1)
+    dd = b * c * (d_plus_n**(-c-1))
+
+    return np.column_stack([da, db, dc, dd])
+
 
 # In[36]:
 
@@ -291,29 +365,26 @@ def extrapolate_parametric(curve, anchor_sizes, model="MMF4", min_points=10,
     x_test = valid_anchors[cutoff_idx:]
 
     if model == "MMF4":
-        model_func = mmf4
-    elif model == "WBL4":
-        model_func = wbl4
-    else:
-        model_func = pow4
-
-    if model == "MMF4":
         # MMF4: (a * b + c * n^d) / (b + n^d)
         # Typical learning curves: start low, asymptote high
         p0 = [0.9, 1000.0, 0.1, 1.0]  # a, b, c, d
         bounds = ([0.01, 1e-6, 0.0, 0.01], [1.0, np.inf, 1.0, 10.0])
-
+        model_func = mmf4
+        jac_func = mmf4_jacobian
     elif model == "WBL4":
         # WBL4: c - b * exp(-a * n^d)
         # Typical: exponential approach to asymptote
         p0 = [0.001, 0.8, 0.9, 1.0]  # a, b, c, d
         bounds = ([1e-10, 0.01, 0.01, 0.01], [1.0, 2.0, 1.0, 5.0])
-
+        model_func = wbl4
+        jac_func = wbl4_jacobian
     else:
         # POW4: a - b * (d + n)^(-c)
         # Power law decay from initial value
         p0 = [0.9, 0.8, 1.0, 100.0]  # a, b, c, d
         bounds = ([0.01, 0.01, 0.001, 1.0], [1.0, 2.0, 5.0, 10000.0])
+        model_func = pow4
+        jac_func = pow4_jacobian
 
     fit_successful = False
 
