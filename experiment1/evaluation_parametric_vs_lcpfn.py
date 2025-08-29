@@ -387,6 +387,7 @@ def extrapolate_parametric(curve, anchor_sizes, model="MMF4", min_points=10,
         model_func = pow4
 
     fit_successful = False
+    global total_param_fits
     ++total_param_fits
 
     # Strategy 1: Try with fixed initial guesses
@@ -407,6 +408,7 @@ def extrapolate_parametric(curve, anchor_sizes, model="MMF4", min_points=10,
     if not fit_successful:
         #print(f"Warning: Curve fitting failed for {model}, using initial parameter guess")
         popt = p0
+        global unsuccessful_param_fits
         ++unsuccessful_param_fits
 
     x_full = valid_anchors
@@ -800,7 +802,7 @@ else:
     df = collect_metrics_parallel(sample_size=sample_size, n_workers=14)  # Use 14 workers for 16 CPU allocation
     df.to_csv(file_path, index=False)  # Save results
 
-print(f'Parametric fitting without jacobian error rate: {unsuccessful_param_fits / total_param_fits * 100}%')
+print(f'Parametric fitting without jacobian error rate: {unsuccessful_param_fits / (total_param_fits if total_param_fits != 0 else 1) * 100}%')
 
 
 # In[45]:
