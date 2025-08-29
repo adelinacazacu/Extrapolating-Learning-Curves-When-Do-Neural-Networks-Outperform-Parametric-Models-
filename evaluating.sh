@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --partition=general --qos=short
-#SBATCH --time=4:00:00
+#SBATCH --time=3:00:00
 #SBATCH --mincpus=16
-#SBATCH --mem=48000
+#SBATCH --mem=16000
 #SBATCH --gres=gpu:1
 
 #SBATCH --job-name=paralleleval
@@ -16,6 +16,8 @@ echo "File descriptor limit set to: $(ulimit -n)"
 # ------------------------------------------------------------------------------
 # Setting up the environment
 # ------------------------------------------------------------------------------
+
+top -b -d 30 -n 480 > top.log &
 
 echo "----------------- Environment ------------------"
 module use /opt/insy/modulefiles

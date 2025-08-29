@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --partition=general --qos=short
-#SBATCH --time=4:00:00
+#SBATCH --partition=general --qos=medium
+#SBATCH --time=14:00:00
 #SBATCH --mincpus=1
-#SBATCH --mem=20000
+#SBATCH --mem=8000
 #SBATCH --gres=gpu:1
 
 #SBATCH --job-name=training

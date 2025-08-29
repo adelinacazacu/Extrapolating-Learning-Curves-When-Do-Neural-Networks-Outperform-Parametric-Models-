@@ -317,6 +317,9 @@ def pow4_jacobian(n, a, b, c, d):
 
 # In[36]:
 
+total_param_fits = 0
+unsuccessful_param_fits = 0
+
 
 def extrapolate_parametric(curve, anchor_sizes, model="MMF4", min_points=10,
                           random_cutoff=True, fixed_cutoff_idx=None, cutoff_percentage=None):
@@ -370,23 +373,21 @@ def extrapolate_parametric(curve, anchor_sizes, model="MMF4", min_points=10,
         p0 = [0.9, 1000.0, 0.1, 1.0]  # a, b, c, d
         bounds = ([0.01, 1e-6, 0.0, 0.01], [1.0, np.inf, 1.0, 10.0])
         model_func = mmf4
-        jac_func = mmf4_jacobian
     elif model == "WBL4":
         # WBL4: c - b * exp(-a * n^d)
         # Typical: exponential approach to asymptote
         p0 = [0.001, 0.8, 0.9, 1.0]  # a, b, c, d
         bounds = ([1e-10, 0.01, 0.01, 0.01], [1.0, 2.0, 1.0, 5.0])
         model_func = wbl4
-        jac_func = wbl4_jacobian
     else:
         # POW4: a - b * (d + n)^(-c)
         # Power law decay from initial value
         p0 = [0.9, 0.8, 1.0, 100.0]  # a, b, c, d
         bounds = ([0.01, 0.01, 0.001, 1.0], [1.0, 2.0, 5.0, 10000.0])
         model_func = pow4
-        jac_func = pow4_jacobian
 
     fit_successful = False
+    ++total_param_fits
 
     # Strategy 1: Try with fixed initial guesses
     try:
@@ -406,6 +407,7 @@ def extrapolate_parametric(curve, anchor_sizes, model="MMF4", min_points=10,
     if not fit_successful:
         #print(f"Warning: Curve fitting failed for {model}, using initial parameter guess")
         popt = p0
+        ++unsuccessful_param_fits
 
     x_full = valid_anchors
     y_pred = model_func(x_full, *popt)
@@ -797,6 +799,8 @@ else:
     torch.manual_seed(42)
     df = collect_metrics_parallel(sample_size=sample_size, n_workers=14)  # Use 14 workers for 16 CPU allocation
     df.to_csv(file_path, index=False)  # Save results
+
+print(f'Parametric fitting without jacobian error rate: {unsuccessful_param_fits / total_param_fits * 100}%')
 
 
 # In[45]:
