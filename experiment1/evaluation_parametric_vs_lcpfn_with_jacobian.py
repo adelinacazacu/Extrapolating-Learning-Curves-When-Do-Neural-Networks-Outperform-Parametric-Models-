@@ -794,7 +794,7 @@ def collect_metrics_parallel(min_points=25, sample_size=500, n_workers=None):
 
 
 sample_size = 1000
-file_path = Path(f'results_{sample_size}samples_parallel_{model_name}.csv')
+file_path = Path(f'results_{sample_size}samples_parallel_with_jacobian_{model_name}.csv')
 if file_path.exists():
     df = pd.read_csv(file_path)
 else:
