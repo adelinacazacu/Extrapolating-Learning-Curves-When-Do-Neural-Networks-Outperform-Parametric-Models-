@@ -2,7 +2,7 @@
 #SBATCH --partition=general --qos=short
 #SBATCH --time=4:00:00
 #SBATCH --mincpus=1
-#SBATCH --mem=48000
+#SBATCH --mem=20000
 #SBATCH --gres=gpu:1
 
 #SBATCH --job-name=training

@@ -277,6 +277,14 @@ AUGMENT = True
 ddevice = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"Using device: {ddevice}")
 
+# Pre-compute candidates for each sequence length
+length_to_candidates = {}
+for seq_len in set(train_curve_lengths):
+    length_to_candidates[seq_len] = [
+        cid for (cid, clen) in enumerate(train_curve_lengths)
+        if clen == seq_len
+    ]
+
 # generating batches from the LCDB dataset
 def get_batch_lcdb_real( batch_size, seq_len, num_features, device=ddevice, noisy_target=True, **_ ):
     assert num_features == 1
@@ -287,8 +295,8 @@ def get_batch_lcdb_real( batch_size, seq_len, num_features, device=ddevice, nois
     y_target = np.empty((batch_size, seq_len), dtype=float)
     y_noisy = np.empty((batch_size, seq_len), dtype=float)
 
-    # determine a list of cids having the desired curve length (TODO: precompute)
-    candidates = [cid for (cid, clen) in enumerate(train_curve_lengths) if clen == seq_len]
+    # determine a list of cids having the desired curve length
+    candidates = length_to_candidates[seq_len]
     cids = np.random.choice(candidates, batch_size, replace=True)
     # replace = TRUE, cause sometimes the number of existing curves is smaller than batch size
 
