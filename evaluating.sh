@@ -17,7 +17,7 @@ echo "File descriptor limit set to: $(ulimit -n)"
 # Setting up the environment
 # ------------------------------------------------------------------------------
 
-top -b -d 30 -n 480 > top.log &
+#top -b -d 30 -n 480 > top.log &
 
 echo "----------------- Environment ------------------"
 module use /opt/insy/modulefiles

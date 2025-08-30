@@ -31,6 +31,6 @@ export PYTHONUNBUFFERED=TRUE
 export PYTHONPATH="${PYTHONPATH}:${PWD}"
 
 cd /tudelft.net/staff-umbrella/lcdb2/adelina/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-
-srun python experiment1/evaluation_parametric_vs_lcpfn.py --seed $SLURM_ARRAY_TASK_ID
+srun python experiment1/evaluation_parametric_vs_lcpfn_with_jacobian.py --seed $SLURM_ARRAY_TASK_ID
 
 conda deactivate
