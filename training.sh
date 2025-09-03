@@ -10,6 +10,10 @@
 #SBATCH --error=err_training_%A_%a.txt
 #SBATCH --array=0-0
 
+export CUDA_LAUNCH_BLOCKING=0
+export OMP_NUM_THREADS=4
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
+
 # ------------------------------------------------------------------------------
 # Setting up the environment
 # ------------------------------------------------------------------------------

@@ -366,7 +366,7 @@ def train_lcdbpfn(get_batch_func, seq_len, emsize, nlayers, num_borders, lr, bat
         batch_size=batch_size,
         scheduler=lcpfn.utils.get_cosine_schedule_with_warmup,
         extra_prior_kwargs_dict={
-            # "num_workers": 10,
+            "num_workers": 4,
             "num_features": num_features,
             "hyperparameters": {
                 **hps,
