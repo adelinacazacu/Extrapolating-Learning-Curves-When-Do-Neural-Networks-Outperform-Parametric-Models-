@@ -38,7 +38,7 @@ START_EPOCH=$((STAGE_ID * EPOCHS_PER_STAGE))
 
 echo "Running stage $STAGE_ID (epochs $START_EPOCH to $((START_EPOCH + EPOCHS_PER_STAGE)))"
 
-srun python experiment2/training-pfn-lcdb11-experiment2-staged.py \
+srun python experiment2/training-pfn-lcdb11-experiment2.py \
     --stage $STAGE_ID \
     --epochs_per_stage $EPOCHS_PER_STAGE \
     --total_stages 10 \
