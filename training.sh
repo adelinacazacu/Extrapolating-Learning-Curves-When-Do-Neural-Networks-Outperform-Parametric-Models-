@@ -1,14 +1,15 @@
+
 #!/bin/bash
-#SBATCH --partition=general --qos=medium
-#SBATCH --time=16:00:00
+#SBATCH --partition=general --qos=short
+#SBATCH --time=4:00:00
 #SBATCH --mincpus=4
-#SBATCH --mem=32000
+#SBATCH --mem=16000
 #SBATCH --gres=gpu:1
 
-#SBATCH --job-name=training
-#SBATCH --output=out_training_%A_%a.txt
-#SBATCH --error=err_training_%A_%a.txt
-#SBATCH --array=0-0
+#SBATCH --job-name=pfn_stage_%A
+#SBATCH --output=out_stage_%A_%a.txt
+#SBATCH --error=err_stage_%A_%a.txt
+#SBATCH --array=0-9  # 10 stages of 80 epochs each
 
 export CUDA_LAUNCH_BLOCKING=0
 export OMP_NUM_THREADS=4
@@ -30,6 +31,18 @@ export PYTHONUNBUFFERED=TRUE
 export PYTHONPATH="${PYTHONPATH}:${PWD}"
 
 cd /tudelft.net/staff-umbrella/lcdb2/adelina/Extrapolating-Learning-Curves-When-Do-Neural-Networks-Outperform-Parametric-Models-
-srun python experiment2/training-pfn-lcdb11-experiment2.py --seed $SLURM_ARRAY_TASK_ID
+
+# Calculate stage parameters
+STAGE_ID=$SLURM_ARRAY_TASK_ID
+EPOCHS_PER_STAGE=80
+START_EPOCH=$((STAGE_ID * EPOCHS_PER_STAGE))
+
+echo "Running stage $STAGE_ID (epochs $START_EPOCH to $((START_EPOCH + EPOCHS_PER_STAGE)))"
+
+srun python experiment2/training-pfn-lcdb11-experiment2-staged.py \
+    --stage $STAGE_ID \
+    --epochs_per_stage $EPOCHS_PER_STAGE \
+    --total_stages 10 \
+    --seed 42
 
 conda deactivate
