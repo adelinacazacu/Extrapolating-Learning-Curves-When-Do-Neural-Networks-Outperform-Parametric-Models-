@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #SBATCH --partition=general --qos=short
 #SBATCH --time=4:00:00
