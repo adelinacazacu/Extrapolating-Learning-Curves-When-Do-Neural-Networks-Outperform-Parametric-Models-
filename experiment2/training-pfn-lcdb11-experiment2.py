@@ -364,14 +364,15 @@ def main():
         start_epoch = stage * epochs_per_stage
 
         # Load previous checkpoint if this isn't the first stage
-        model = None
+        load_pretrained = False
+        pretrained_path = None
         if stage > 0:
             prev_checkpoint = f"trained_models/exp2_stage_{stage - 1}_checkpoint.pth"
             if os.path.exists(prev_checkpoint):
                 print(f"Loading checkpoint from stage {stage - 1}")
-                checkpoint = torch.load(prev_checkpoint, weights_only=False)
-                model = checkpoint['model']
-                print(f"Resuming from epoch {checkpoint.get('epoch', 'unknown')}")
+                load_pretrained = True
+                pretrained_path = prev_checkpoint
+                print(f"Will resume from checkpoint: {pretrained_path}")
 
         # Set up training configuration
         hps = {}
@@ -422,7 +423,8 @@ def main():
             steps_per_epoch=50,
             train_mixed_precision=False,
             checkpoint_path=checkpoint_path,
-            pretrained_model=model  # Pass the model if resuming
+            load_pretrained_model=load_pretrained,
+            pretrained_model_path=pretrained_path
         )
 
         return lctrain.train(**config)
