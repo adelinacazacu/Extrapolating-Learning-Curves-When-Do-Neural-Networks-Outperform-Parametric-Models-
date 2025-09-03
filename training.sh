@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --partition=general --qos=short
-#SBATCH --time=4:00:00
+#SBATCH --time=3:00:00
 #SBATCH --mincpus=4
-#SBATCH --mem=16000
+#SBATCH --mem=8000
 #SBATCH --gres=gpu:1
 
 #SBATCH --job-name=pfn_stage_%A
