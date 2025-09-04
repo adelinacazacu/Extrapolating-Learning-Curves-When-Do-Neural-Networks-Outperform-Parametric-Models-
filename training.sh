@@ -4,12 +4,11 @@
 #SBATCH --mincpus=2
 #SBATCH --mem=2GB
 #SBATCH --gres=gpu:1
-#SBATCH --exclude-gres=gpu:turing
 
 #SBATCH --job-name=pfn_stage_%A
 #SBATCH --output=out_stage_%A_%a.txt
 #SBATCH --error=err_stage_%A_%a.txt
-#SBATCH --array=0-9  # 10 stages of 80 epochs each
+#SBATCH --array=0-9  # 10 stages of 100 epochs each
 
 export CUDA_LAUNCH_BLOCKING=0
 export OMP_NUM_THREADS=2
@@ -34,7 +33,7 @@ cd /tudelft.net/staff-umbrella/lcdb2/adelina/Extrapolating-Learning-Curves-When-
 
 # Calculate stage parameters
 STAGE_ID=$SLURM_ARRAY_TASK_ID
-EPOCHS_PER_STAGE=80
+EPOCHS_PER_STAGE=100
 START_EPOCH=$((STAGE_ID * EPOCHS_PER_STAGE))
 
 echo "Running stage $STAGE_ID (epochs $START_EPOCH to $((START_EPOCH + EPOCHS_PER_STAGE)))"

@@ -24,12 +24,11 @@ import os
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--stage', type=int, required=True, help='Current training stage (0-based)')
-    parser.add_argument('--epochs_per_stage', type=int, default=80, help='Epochs per stage')
+    parser.add_argument('--epochs_per_stage', type=int, default=100, help='Epochs per stage')
     parser.add_argument('--total_stages', type=int, default=10, help='Total number of stages')
     parser.add_argument('--seed', type=int, default=42, help='Random seed')
     args = parser.parse_args()
 
-    # Set up paths
     main_path = os.path.abspath(os.path.join(os.getcwd(), ''))
     if main_path not in sys.path:
         sys.path.insert(0, main_path)
@@ -38,14 +37,12 @@ def main():
     experiments_path = f"{main_path}/{TRAINING_NAME}"
     os.makedirs(experiments_path, exist_ok=True)
 
-    # Set seeds
     SEED = args.seed
     random.seed(SEED)
     np.random.seed(SEED)
     torch.cuda.manual_seed(SEED)
     torch.manual_seed(SEED)
 
-    # Load your data (same as before)
     OPENML_ID = {0: '3', 1: '6', 2: '11', 3: '12', 4: '13', 5: '14', 6: '15', 7: '16', 8: '18', 9: '21', 10: '22',
                  11: '23', 12: '24', 13: '26', 14: '28', 15: '29', 16: '30', 17: '31', 18: '32', 19: '36', 20: '37',
                  21: '38', 22: '44', 23: '46', 24: '50', 25: '54', 26: '55', 27: '57', 28: '60', 29: '61', 30: '151',
@@ -86,7 +83,6 @@ def main():
                    21: 'ens.RandomForest', 22: 'ens.GradientBoosting', 23: 'DummyClassifier'}
     ANCHOR_SIZE = np.ceil(16 * 2 ** ((np.arange(137)) / 8)).astype(int)
 
-    # Load data
     lc_data = h5py.File('LCDB11_ACC_265_noFS_raw_compress.hdf5', 'r')['accuracy'][...][:, :, :, :, :, 1]
     mean_valid_lc_nofs = np.nanmean(lc_data, axis=(2, 3))
 
@@ -419,7 +415,7 @@ def main():
             single_eval_pos_gen=lambda: np.random.randint(0, np.random.choice(train_curve_lengths)),
             aggregate_k_gradients=1,
             nhid=(emsize * 2),
-            steps_per_epoch=50,
+            steps_per_epoch=100,
             train_mixed_precision=False,
             checkpoint_path=checkpoint_path,
             load_pretrained_model=load_pretrained,
@@ -434,7 +430,7 @@ def main():
     NLAYERS = 12
     NUM_BORDERS = 1000
     LR = 0.0001
-    BATCH_SIZE = 250
+    BATCH_SIZE = 100
 
     print(f"Starting stage {args.stage} of {args.total_stages}")
     print(f"Training for {args.epochs_per_stage} epochs")
