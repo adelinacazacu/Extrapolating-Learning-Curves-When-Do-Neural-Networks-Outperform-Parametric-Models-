@@ -408,7 +408,7 @@ def main():
             batch_size=batch_size,
             scheduler=lcpfn.utils.get_cosine_schedule_with_warmup,
             extra_prior_kwargs_dict={
-                "num_workers": 4,
+                "num_workers": 2,
                 "num_features": num_features,
                 "hyperparameters": {**hps},
             },

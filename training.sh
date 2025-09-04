@@ -2,7 +2,7 @@
 #SBATCH --partition=general --qos=short
 #SBATCH --time=1:00:00
 #SBATCH --mincpus=2
-#SBATCH --mem=2GB
+#SBATCH --mem=4GB
 #SBATCH --gres=gpu:1
 
 #SBATCH --job-name=pfn_stage_%A
@@ -11,7 +11,7 @@
 #SBATCH --array=0-9  # 10 stages of 80 epochs each
 
 export CUDA_LAUNCH_BLOCKING=0
-export OMP_NUM_THREADS=4
+export OMP_NUM_THREADS=2
 export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
 
 # ------------------------------------------------------------------------------
