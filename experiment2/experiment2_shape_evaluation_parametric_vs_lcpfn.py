@@ -186,7 +186,7 @@ print(f"SVM_poly curves in training set: {len(svm_poly_train_curves)}")
 # In[36]:
 
 
-model_name = 'lcpfn_model_exp2_140_512_3_1000_0.0001_250_800.pth'
+model_name = 'lcpfn_model_exp2_140_512_12_1000_0.0001_250_800.pth'
 model = torch.load(f'trained_models/exp2_140_512_12_1000_0.0001_250_800/{model_name}', weights_only=False)
 model.eval()
 
@@ -876,8 +876,8 @@ sample_size = 200
 
 # In[47]:
 
-
-file_path = Path(f'experiment2/learning_curve_extrapolation_results_{sample_size}_samples_{model_name}.csv')
+model_name_no_ext = model_name.replace('.pth', '')
+file_path = Path(f'experiment2/learning_curve_extrapolation_results_{sample_size}_samples_{model_name_no_ext}.csv')
 if file_path.exists():
     results_df = pd.read_csv(file_path)
 else:
