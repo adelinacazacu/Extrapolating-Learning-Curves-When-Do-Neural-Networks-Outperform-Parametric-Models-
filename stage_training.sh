@@ -3,7 +3,7 @@
 #SBATCH --time=1:00:00
 #SBATCH --mincpus=2
 #SBATCH --mem=4GB
-#SBATCH --gres=gpu:l40:1
+#SBATCH --gres=gpu:a40:1
 
 #SBATCH --job-name=pfn_stage_%A
 #SBATCH --output=out_stage_%A.txt
