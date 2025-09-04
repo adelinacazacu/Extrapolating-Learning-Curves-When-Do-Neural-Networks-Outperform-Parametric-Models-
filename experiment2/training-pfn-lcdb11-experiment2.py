@@ -21,7 +21,6 @@ from lcpfn import train as lctrain
 import sys
 import os
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--stage', type=int, required=True, help='Current training stage (0-based)')
