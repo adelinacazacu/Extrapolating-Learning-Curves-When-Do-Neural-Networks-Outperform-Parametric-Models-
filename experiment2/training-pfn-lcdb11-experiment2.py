@@ -362,12 +362,19 @@ def main():
         load_pretrained = False
         pretrained_path = None
         if stage > 0:
-            prev_checkpoint = f"trained_models/exp2_stage_{stage - 1}_checkpoint.pth"
-            if os.path.exists(prev_checkpoint):
+            prev_checkpoint_path = f"trained_models/exp2_stage_{stage - 1}_checkpoint.pth"
+            if os.path.exists(prev_checkpoint_path):
                 print(f"Loading checkpoint from stage {stage - 1}")
+
+                # Load the checkpoint dictionary
+                checkpoint = torch.load(prev_checkpoint_path)
+
+                temp_model_path = f"trained_models/temp_model_stage_{stage - 1}.pth"
+                torch.save(checkpoint['model'], temp_model_path)
+
                 load_pretrained = True
-                pretrained_path = prev_checkpoint
-                print(f"Will resume from checkpoint: {pretrained_path}")
+                pretrained_path = temp_model_path  # Use the extracted model
+                print(f"Will resume from extracted model: {pretrained_path}")
 
         # Set up training configuration
         hps = {}
