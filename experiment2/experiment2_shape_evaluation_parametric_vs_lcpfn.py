@@ -186,8 +186,8 @@ print(f"SVM_poly curves in training set: {len(svm_poly_train_curves)}")
 # In[36]:
 
 
-model_name = 'lcpfn_model_exp2_140_512_12_1000_0.0001_250_800.pth'
-model = torch.load(f'trained_models/exp2_140_512_12_1000_0.0001_250_800/{model_name}', weights_only=False)
+model_name = 'lcpfn_model_exp2_140_512_12_1000_0.0001_100_1000.pth'
+model = torch.load(f'trained_models/exp2_140_512_12_1000_0.0001_100_1000/{model_name}', weights_only=False)
 model.eval()
 
 

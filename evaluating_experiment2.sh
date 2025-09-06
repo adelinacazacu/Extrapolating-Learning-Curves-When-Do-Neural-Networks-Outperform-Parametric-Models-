@@ -1,9 +1,8 @@
 #!/bin/bash
 #SBATCH --partition=general --qos=short
-#SBATCH --time=3:00:00
-#SBATCH --mincpus=16
+#SBATCH --time=2:00:00
+#SBATCH --mincpus=16GB
 #SBATCH --mem=16000
-#SBATCH --gres=gpu:1
 
 #SBATCH --job-name=paralleleval
 #SBATCH --output=out_paralleleval_%A_%a.txt
