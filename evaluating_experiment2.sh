@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --partition=general --qos=short
 #SBATCH --time=2:00:00
-#SBATCH --mincpus=16GB
-#SBATCH --mem=16000
+#SBATCH --mincpus=16
+#SBATCH --mem=16GB
 
 #SBATCH --job-name=paralleleval
 #SBATCH --output=out_paralleleval_%A_%a.txt
