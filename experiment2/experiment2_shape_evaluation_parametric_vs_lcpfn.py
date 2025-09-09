@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+import argparse
 
 # # Evaluation Notebook - LC-PFN vs. Parametric Models
 # ### Comparative experiment: Flat vs non-Flat, Monotone & Convex vs non-Monotone & Convex, Peaking vs non-Peaking, Dipping vs non-Dipping
@@ -36,8 +37,9 @@ os.environ['OMP_NUM_THREADS'] = '16'
 os.environ['MKL_NUM_THREADS'] = '16'
 os.environ['NUMBA_NUM_THREADS'] = '16'
 
-# In[34]:
-
+parser = argparse.ArgumentParser()
+parser.add_argument('--seed', type=int, default=42, help='Random seed')
+args = parser.parse_args()
 
 ### hyperparameter
 OPENML_ID = {0: '3', 1: '6', 2: '11', 3: '12', 4: '13', 5: '14', 6: '15', 7: '16', 8: '18', 9: '21', 10: '22', 11: '23', 12: '24', 13: '26', 14: '28', 15: '29', 16: '30', 17: '31', 18: '32', 19: '36', 20: '37', 21: '38', 22: '44', 23: '46', 24: '50', 25: '54', 26: '55', 27: '57', 28: '60', 29: '61', 30: '151', 31: '179', 32: '180', 33: '181', 34: '182', 35: '184', 36: '185', 37: '188', 38: '201', 39: '273', 40: '293', 41: '299', 42: '300', 43: '307', 44: '336', 45: '346', 46: '351', 47: '354', 48: '357', 49: '380', 50: '389', 51: '390', 52: '391', 53: '392', 54: '393', 55: '395', 56: '396', 57: '398', 58: '399', 59: '401', 60: '446', 61: '458', 62: '469', 63: '554', 64: '679', 65: '715', 66: '718', 67: '720', 68: '722', 69: '723', 70: '727', 71: '728', 72: '734', 73: '735', 74: '737', 75: '740', 76: '741', 77: '743', 78: '751', 79: '752', 80: '761', 81: '772', 82: '797', 83: '799', 84: '803', 85: '806', 86: '807', 87: '813', 88: '816', 89: '819', 90: '821', 91: '822', 92: '823', 93: '833', 94: '837', 95: '843', 96: '845', 97: '846', 98: '847', 99: '849', 100: '866', 101: '871', 102: '881', 103: '897', 104: '901', 105: '903', 106: '904', 107: '910', 108: '912', 109: '913', 110: '914', 111: '917', 112: '923', 113: '930', 114: '934', 115: '953', 116: '958', 117: '959', 118: '962', 119: '966', 120: '971', 121: '976', 122: '977', 123: '978', 124: '979', 125: '980', 126: '991', 127: '993', 128: '995', 129: '1000', 130: '1002', 131: '1018', 132: '1019', 133: '1020', 134: '1021', 135: '1036', 136: '1040', 137: '1041', 138: '1042', 139: '1049', 140: '1050', 141: '1053', 142: '1056', 143: '1063', 144: '1067', 145: '1068', 146: '1069', 147: '1083', 148: '1084', 149: '1085', 150: '1086', 151: '1087', 152: '1088', 153: '1116', 154: '1119', 155: '1120', 156: '1128', 157: '1130', 158: '1134', 159: '1138', 160: '1139', 161: '1142', 162: '1146', 163: '1161', 164: '1166', 165: '1216', 166: '1233', 167: '1235', 168: '1236', 169: '1441', 170: '1448', 171: '1450', 172: '1457', 173: '1461', 174: '1462', 175: '1464', 176: '1465', 177: '1468', 178: '1475', 179: '1477', 180: '1478', 181: '1479', 182: '1480', 183: '1483', 184: '1485', 185: '1486', 186: '1487', 187: '1488', 188: '1489', 189: '1494', 190: '1497', 191: '1499', 192: '1501', 193: '1503', 194: '1509', 195: '1510', 196: '1515', 197: '1566', 198: '1567', 199: '1575', 200: '1590', 201: '1592', 202: '1597', 203: '4134', 204: '4135', 205: '4137', 206: '4534', 207: '4538', 208: '4541', 209: '6332', 210: '23381', 211: '23512', 212: '23517', 213: '40498', 214: '40499', 215: '40664', 216: '40668', 217: '40670', 218: '40672', 219: '40677', 220: '40685', 221: '40687', 222: '40701', 223: '40713', 224: '40900', 225: '40910', 226: '40923', 227: '40927', 228: '40966', 229: '40971', 230: '40975', 231: '40978', 232: '40979', 233: '40981', 234: '40982', 235: '40983', 236: '40984', 237: '40994', 238: '40996', 239: '41027', 240: '41142', 241: '41143', 242: '41144', 243: '41145', 244: '41146', 245: '41150', 246: '41156', 247: '41157', 248: '41158', 249: '41159', 250: '41161', 251: '41163', 252: '41164', 253: '41165', 254: '41166', 255: '41167', 256: '41168', 257: '41169', 258: '41228', 259: '41972', 260: '42734', 261: '42742', 262: '42769', 263: '42809', 264: '42810'}
@@ -50,20 +52,11 @@ lc_data = h5py.File(Path.cwd() / 'LCDB11_ACC_265_noFS_raw_compress.hdf5', 'r')['
 mean_valid_lc_nofs =np.nanmean(lc_data, axis=(2, 3))
 
 
-# In[35]:
-
-
 SEED = 42
 random.seed(SEED)
 np.random.seed(SEED)
 torch.cuda.manual_seed(SEED)
 torch.manual_seed(SEED)
-
-# Characteristic groups
-flat_learners_indices = [1, 2, 3, 14]
-mono_conv_learners_indices = [0, 4, 5, 20, 21, 22, 6, 7, 8, 10, 18]
-peaking_learner_indices = [3, 9, 11, 12, 13, 17]
-dipping_learner_indices = [3, 19, 13, 12, 17]
 
 n_datasets = len(OPENML_ID)
 n_learners = len(LEARNER_ZOO) - 1  # Exclude DummyClassifier
@@ -92,104 +85,53 @@ train_pair_indices, test_pair_indices = train_test_split(
 train_pairs = all_pairs[train_pair_indices]
 test_pairs = all_pairs[test_pair_indices]
 
+dipping_pairs = np.loadtxt("experiment2/dipping_pairs.csv", dtype=int, delimiter=",")
+flat_pairs = np.loadtxt("experiment2/flat_pairs.csv", dtype=int, delimiter=",")
+mono_conv_pairs = np.loadtxt("experiment2/mono_conv_pairs.csv", dtype=int, delimiter=",")
+peaking_pairs = np.loadtxt("experiment2/peaking_pairs.csv", dtype=int, delimiter=",")
+
 print(f"Train pairs: {len(train_pairs)}")
 print(f"Test pairs: {len(test_pairs)}")
 
-def extract_curves_with_metadata(pairs, lc_data):
+def extract_all_curves_for_pairs(pairs, lc_data):
     curves = []
-    curve_lengths = []
     dataset_indices = []
     learner_indices = []
 
     for dataset_idx, learner_idx in pairs:
-        curve = np.nanmean(lc_data[dataset_idx, learner_idx, :, :, :], axis=(0, 1))
-        curve_length = np.count_nonzero(~np.isnan(curve))
+        dataset_learner_curves = lc_data[dataset_idx, learner_idx, :, :, :]
 
-        if curve_length > 0:
-            curves.append(curve)
-            curve_lengths.append(curve_length)
-            dataset_indices.append(dataset_idx)
-            learner_indices.append(learner_idx)
+        for seed_idx in range(dataset_learner_curves.shape[0]):
+            for split_idx in range(dataset_learner_curves.shape[1]):
+                curve = dataset_learner_curves[seed_idx, split_idx, :]
+                curve_length = np.count_nonzero(~np.isnan(curve))
 
-    return curves, curve_lengths, dataset_indices, learner_indices
+                if curve_length > 0:
+                    curves.append(curve)
+                    dataset_indices.append(dataset_idx)
+                    learner_indices.append(learner_idx)
 
-train_curves, train_curve_lengths, train_dataset_indices, train_learner_indices = extract_curves_with_metadata(train_pairs, lc_data)
-test_curves, test_curve_lengths, test_dataset_indices, test_learner_indices = extract_curves_with_metadata(test_pairs, lc_data)
+    return curves, dataset_indices, learner_indices
+
+train_curves, train_dataset_indices, train_learner_indices = extract_all_curves_for_pairs(train_pairs, lc_data)
+test_curves, test_dataset_indices, test_learner_indices = extract_all_curves_for_pairs(test_pairs, lc_data)
 
 print(f"Train curves: {len(train_curves)}")
 print(f"Test curves: {len(test_curves)}")
 
-def filter_by_characteristic(curves, curve_lengths, dataset_indices, learner_indices, characteristic_learner_indices):
-    """Filter curves based on learner characteristic"""
-    filtered_curves = []
-    filtered_lengths = []
-    filtered_dataset_indices = []
-    filtered_learner_indices = []
+test_dipping_curves, test_dipping_datasets, test_dipping_learners = extract_all_curves_for_pairs(dipping_pairs[:, [1, 0]], lc_data)
+test_flat_curves, test_flat_datasets, test_flat_learners = extract_all_curves_for_pairs(flat_pairs[:, [1, 0]], lc_data)
+test_mono_conv_curves, test_mono_conv_datasets, test_mono_conv_learners = extract_all_curves_for_pairs(mono_conv_pairs[:, [1, 0]], lc_data)
+test_peaking_curves, test_peaking_datasets, test_peaking_learners = extract_all_curves_for_pairs(peaking_pairs[:, [1, 0]], lc_data)
 
-    for i, learner_idx in enumerate(learner_indices):
-        if learner_idx in characteristic_learner_indices:
-            filtered_curves.append(curves[i])
-            filtered_lengths.append(curve_lengths[i])
-            filtered_dataset_indices.append(dataset_indices[i])
-            filtered_learner_indices.append(learner_idx)
-
-    return filtered_curves, filtered_lengths, filtered_dataset_indices, filtered_learner_indices
-
-# Get training curves for mono_conv learners
-train_mono_conv_curves, train_mono_conv_lengths, train_mono_conv_datasets, train_mono_conv_learners = filter_by_characteristic(
-    train_curves, train_curve_lengths, train_dataset_indices, train_learner_indices, mono_conv_learners_indices
-)
-
-print(f"Train mono_conv curves: {len(train_mono_conv_curves)}")
-
-# Get test curves for flat learners
-test_flat_curves, test_flat_lengths, test_flat_datasets, test_flat_learners = filter_by_characteristic(
-    test_curves, test_curve_lengths, test_dataset_indices, test_learner_indices, flat_learners_indices
-)
-
+print(f"Test dipping curves: {len(test_dipping_curves)}")
 print(f"Test flat curves: {len(test_flat_curves)}")
-
-def create_binary_split(curves, curve_lengths, dataset_indices, learner_indices, characteristic_indices):
-    """Create binary split: characteristic vs non-characteristic"""
-    char_curves, char_lengths, char_datasets, char_learners = filter_by_characteristic(
-        curves, curve_lengths, dataset_indices, learner_indices, characteristic_indices
-    )
-
-    non_char_curves, non_char_lengths, non_char_datasets, non_char_learners = filter_by_characteristic(
-        curves, curve_lengths, dataset_indices, learner_indices,
-        [i for i in range(23) if i not in characteristic_indices]
-    )
-
-    return (char_curves, char_lengths, char_datasets, char_learners), \
-           (non_char_curves, non_char_lengths, non_char_datasets, non_char_learners)
-
-# Create mono_conv vs non-mono_conv split for training data
-(train_mono_conv, train_non_mono_conv) = create_binary_split(
-    train_curves, train_curve_lengths, train_dataset_indices, train_learner_indices,
-    mono_conv_learners_indices
-)
-
-print(f"Train mono_conv: {len(train_mono_conv[0])} curves")
-print(f"Train non-mono_conv: {len(train_non_mono_conv[0])} curves")
-
-# Find all SVM_poly curves (index 1) in training set
-svm_poly_train_curves = []
-for i, learner_idx in enumerate(train_learner_indices):
-    if learner_idx == 1:  # SVM_poly
-        svm_poly_train_curves.append(train_curves[i])
-
-print(f"SVM_poly curves in training set: {len(svm_poly_train_curves)}")
-
-
-# Import trained model.
-
-# In[36]:
-
+print(f"Test mono_conv curves: {len(test_mono_conv_curves)}")
+print(f"Test peaking curves: {len(test_peaking_curves)}")
 
 model_name = 'lcpfn_model_exp2_140_512_12_1000_0.0001_100_1000.pth'
 model = torch.load(f'trained_models/exp2_140_512_12_1000_0.0001_100_1000/{model_name}', weights_only=False)
 model.eval()
-
 
 # ## Extrapolating curves
 
@@ -721,9 +663,8 @@ def evaluate_single_curve_with_metadata(args):
         return curve_idx, []
 
 
-def evaluate_all_curves_with_metadata(curves, curve_lengths, dataset_indices, learner_indices,
-                                               anchor_sizes, lcpfn_model, min_points=10,
-                                               cutoff_percentages=None, sample_size=None, n_workers=None):
+def evaluate_all_curves_with_metadata(curves, dataset_indices, learner_indices, anchor_sizes, lcpfn_model,
+                                      min_points=10, cutoff_percentages=None, sample_size=None, n_workers=None):
     """
     Parallel version of evaluate_all_curves_with_metadata.
 
@@ -750,7 +691,6 @@ def evaluate_all_curves_with_metadata(curves, curve_lengths, dataset_indices, le
     if sample_size and len(curves) > sample_size:
         indices = random.sample(range(len(curves)), sample_size)
         curves = [curves[i] for i in indices]
-        curve_lengths = [curve_lengths[i] for i in indices]
         dataset_indices = [dataset_indices[i] for i in indices]
         learner_indices = [learner_indices[i] for i in indices]
 
@@ -840,60 +780,46 @@ def filter_results_by_learner_characteristic(results_df, characteristic_learner_
     filtered_df['Scenario'] = characteristic_name
     return filtered_df
 
-
-# In[46]:
-
-
 def create_scenario_comparison_data(results_df):
     """
     Create comparison data for different learner characteristic scenarios.
-
-    Args:
-        results_df: DataFrame with all evaluation results
-
-    Returns:
-        DataFrame with scenario labels added
     """
     scenario_data = []
 
     scenarios = {
-        'Flat': flat_learners_indices,
-        'MonoConv': mono_conv_learners_indices,
-        'Peaking': peaking_learner_indices,
-        'Dipping': dipping_learner_indices
+        'Flat': set(map(tuple, flat_pairs)),
+        'MonoConv': set(map(tuple, mono_conv_pairs)),
+        'Peaking': set(map(tuple, peaking_pairs)),
+        'Dipping': set(map(tuple, dipping_pairs))
     }
 
-    for scenario_name, learner_indices in scenarios.items():
-        scenario_df = filter_results_by_learner_characteristic(
-            results_df, learner_indices, scenario_name
-        )
+    for scenario_name, pair_set in scenarios.items():
+        mask = results_df.apply(lambda row: (row['Learner_idx'], row['Dataset_idx']) in pair_set, axis=1)
+        scenario_df = results_df[mask].copy()
+        scenario_df['Scenario'] = scenario_name
         scenario_data.append(scenario_df)
 
     return pd.concat(scenario_data, ignore_index=True)
 
-sample_size = 200
-
-
-# In[47]:
+sample_size = 1000
 
 model_name_no_ext = model_name.replace('.pth', '')
 file_path = Path(f'experiment2/learning_curve_extrapolation_results_{sample_size}_samples_{model_name_no_ext}.csv')
 if file_path.exists():
     results_df = pd.read_csv(file_path)
 else:
-    SEED = 42
+    SEED = args.seed
     random.seed(SEED)
     np.random.seed(SEED)
     torch.cuda.manual_seed(SEED)
     torch.manual_seed(SEED)
     results_df = evaluate_all_curves_with_metadata(
         curves=test_curves,
-        curve_lengths=test_curve_lengths,
         dataset_indices=test_dataset_indices,
         learner_indices=test_learner_indices,
         anchor_sizes=ANCHOR_SIZE,
         lcpfn_model=model,
-        min_points=25,
+        min_points=15,
         cutoff_percentages=[0.1, 0.3, 0.5, 0.7, 0.9],
         sample_size=sample_size,
         n_workers=14  # Use 14 workers for 16 CPU allocation
