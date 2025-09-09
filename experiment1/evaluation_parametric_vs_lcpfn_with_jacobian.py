@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+import argparse
 # # Evaluation Notebook - LC-PFN vs. Parametric Models
 # ### Comparative experiment: UD, UL, UDUL
 
@@ -36,6 +36,10 @@ warnings.filterwarnings('ignore')
 
 import lcpfn
 from lcpfn import bar_distribution, encoders, train, utils
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--seed', type=int, default=42, help='Random seed')
+args = parser.parse_args()
 
 # In[33]:
 
@@ -794,13 +798,13 @@ def collect_metrics_parallel(min_points=25, sample_size=500, n_workers=None):
 
 
 sample_size = 1000
-file_path = Path(f'results_{sample_size}samples_parallel_with_jacobian_{model_name}.csv')
+file_path = Path(f'results_seed{args.seed}_{sample_size}samples_parallel_{model_name}.csv')
 if file_path.exists():
     df = pd.read_csv(file_path)
 else:
-    random.seed(42)
-    np.random.seed(42)
-    torch.manual_seed(42)
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
     df = collect_metrics_parallel(sample_size=sample_size, n_workers=14)  # Use 14 workers for 16 CPU allocation
     df.to_csv(file_path, index=False)  # Save results
 
