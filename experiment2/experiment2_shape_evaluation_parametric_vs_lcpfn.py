@@ -662,129 +662,30 @@ def evaluate_single_curve_with_metadata(args):
         print(f"Error processing curve {curve_idx}: {e}")
         return curve_idx, []
 
-
-def evaluate_all_curves_with_metadata(curves, dataset_indices, learner_indices, anchor_sizes, lcpfn_model,
-                                      min_points=10, cutoff_percentages=None, sample_size=None, n_workers=None):
+def evaluate_all_curves_with_metadata_per_scenario(curves, dataset_indices, learner_indices, anchor_sizes, lcpfn_model,
+                                                   min_points=10, cutoff_percentages=None,
+                                                   sample_size_per_scenario=1000, n_workers=None):
     """
-    Parallel version of evaluate_all_curves_with_metadata.
+    Evaluate curves with separate sampling for each cutoff-scenario combination.
 
     Args:
         curves: List of learning curves
-        curve_lengths: List of curve lengths
         dataset_indices: List of dataset indices for each curve
         learner_indices: List of learner indices for each curve
         anchor_sizes: Training sizes corresponding to the curve points
         lcpfn_model: Trained LC-PFN model
         min_points: Minimum number of points to use for fitting
-        cutoff_percentages: List of cutoff percentages to evaluate (if None, uses random cutoff)
-        sample_size: If provided, randomly sample this many curves
-        n_workers: Number of parallel workers (default: number of CPUs - 1)
+        cutoff_percentages: List of cutoff percentages to evaluate
+        sample_size_per_scenario: Sample size per cutoff-scenario combination
+        n_workers: Number of parallel workers
 
     Returns:
         DataFrame with all evaluation results and metadata
     """
     if n_workers is None:
-        n_workers = max(1, mp.cpu_count() - 1)  # Leave one CPU free
+        n_workers = max(1, mp.cpu_count() - 1)
 
     print(f"Using {n_workers} parallel workers")
-
-    if sample_size and len(curves) > sample_size:
-        indices = random.sample(range(len(curves)), sample_size)
-        curves = [curves[i] for i in indices]
-        dataset_indices = [dataset_indices[i] for i in indices]
-        learner_indices = [learner_indices[i] for i in indices]
-
-    all_results = []
-
-    if cutoff_percentages:
-        for cutoff_pct in cutoff_percentages:
-            print(f"Processing with {cutoff_pct * 100:.0f}% cutoff ({len(curves)} curves)...")
-
-            # Prepare arguments for parallel processing
-            args_list = [
-                (i, curve, dataset_indices[i], learner_indices[i],
-                 anchor_sizes, lcpfn_model, min_points, cutoff_pct)
-                for i, curve in enumerate(curves)
-            ]
-
-            # Process curves in parallel
-            with ProcessPoolExecutor(max_workers=n_workers) as executor:
-                # Submit all tasks
-                future_to_idx = {
-                    executor.submit(evaluate_single_curve_with_metadata, args): args[0]
-                    for args in args_list
-                }
-
-                # Collect results with progress tracking
-                cutoff_results = []
-                completed = 0
-
-                for future in as_completed(future_to_idx):
-                    curve_idx, results = future.result()
-                    completed += 1
-
-                    # Print progress every 50 curves
-                    if completed % 50 == 0:
-                        print(f"  Completed {completed}/{len(curves)} curves")
-
-                    cutoff_results.extend(results)
-
-                all_results.extend(cutoff_results)
-                print(f"  Completed {cutoff_pct * 100:.0f}% cutoff - Processed {len(cutoff_results)} valid results")
-    else:
-        print("Processing with random cutoffs...")
-
-        # For random cutoffs, we need to handle differently since each curve gets its own random cutoff
-        args_list = [
-            (i, curve, dataset_indices[i], learner_indices[i],
-             anchor_sizes, lcpfn_model, min_points, None)  # None for random cutoff
-            for i, curve in enumerate(curves)
-        ]
-
-        with ProcessPoolExecutor(max_workers=n_workers) as executor:
-            future_to_idx = {
-                executor.submit(evaluate_single_curve_with_metadata, args): args[0]
-                for args in args_list
-            }
-
-            completed = 0
-            for future in as_completed(future_to_idx):
-                curve_idx, results = future.result()
-                completed += 1
-
-                if completed % 50 == 0:
-                    print(f"  Completed {completed}/{len(curves)} curves")
-
-                all_results.extend(results)
-
-    return pd.DataFrame(all_results)
-
-
-# In[45]:
-
-
-def filter_results_by_learner_characteristic(results_df, characteristic_learner_indices,
-                                           characteristic_name):
-    """
-    Filter evaluation results by learner characteristic.
-
-    Args:
-        results_df: DataFrame with evaluation results
-        characteristic_learner_indices: List of learner indices for this characteristic
-        characteristic_name: Name of the characteristic for labeling
-
-    Returns:
-        DataFrame filtered for the characteristic with added scenario column
-    """
-    filtered_df = results_df[results_df['Learner_idx'].isin(characteristic_learner_indices)].copy()
-    filtered_df['Scenario'] = characteristic_name
-    return filtered_df
-
-def create_scenario_comparison_data(results_df):
-    """
-    Create comparison data for different learner characteristic scenarios.
-    """
-    scenario_data = []
 
     scenarios = {
         'Flat': set(map(tuple, flat_pairs)),
@@ -793,13 +694,81 @@ def create_scenario_comparison_data(results_df):
         'Dipping': set(map(tuple, dipping_pairs))
     }
 
-    for scenario_name, pair_set in scenarios.items():
-        mask = results_df.apply(lambda row: (row['Learner_idx'], row['Dataset_idx']) in pair_set, axis=1)
-        scenario_df = results_df[mask].copy()
-        scenario_df['Scenario'] = scenario_name
-        scenario_data.append(scenario_df)
+    scenario_curves = {scenario: {'curves': [], 'dataset_indices': [], 'learner_indices': [], 'orig_indices': []}
+                       for scenario in scenarios}
 
-    return pd.concat(scenario_data, ignore_index=True)
+    for i, (curve, dataset_idx, learner_idx) in enumerate(zip(curves, dataset_indices, learner_indices)):
+        for scenario_name, pair_set in scenarios.items():
+            if (learner_idx, dataset_idx) in pair_set:
+                scenario_curves[scenario_name]['curves'].append(curve)
+                scenario_curves[scenario_name]['dataset_indices'].append(dataset_idx)
+                scenario_curves[scenario_name]['learner_indices'].append(learner_idx)
+                scenario_curves[scenario_name]['orig_indices'].append(i)
+                break
+
+    all_results = []
+
+    for scenario_name, scenario_data in scenario_curves.items():
+        if len(scenario_data['curves']) == 0:
+            print(f"No curves found for scenario {scenario_name}")
+            continue
+
+        print(f"Processing scenario: {scenario_name} ({len(scenario_data['curves'])} total curves)")
+
+        for cutoff_pct in cutoff_percentages:
+            print(f"  Processing {scenario_name} with {cutoff_pct * 100:.0f}% cutoff...")
+
+            # Sample for this specific cutoff-scenario combination
+            available_curves = len(scenario_data['curves'])
+            sample_size = min(sample_size_per_scenario, available_curves)
+
+            if sample_size < available_curves:
+                sample_indices = random.sample(range(available_curves), sample_size)
+                sampled_curves = [scenario_data['curves'][i] for i in sample_indices]
+                sampled_dataset_indices = [scenario_data['dataset_indices'][i] for i in sample_indices]
+                sampled_learner_indices = [scenario_data['learner_indices'][i] for i in sample_indices]
+                sampled_orig_indices = [scenario_data['orig_indices'][i] for i in sample_indices]
+            else:
+                sampled_curves = scenario_data['curves']
+                sampled_dataset_indices = scenario_data['dataset_indices']
+                sampled_learner_indices = scenario_data['learner_indices']
+                sampled_orig_indices = scenario_data['orig_indices']
+
+            # Prepare arguments for parallel processing
+            args_list = [
+                (orig_idx, curve, dataset_idx, learner_idx,
+                 anchor_sizes, lcpfn_model, min_points, cutoff_pct)
+                for orig_idx, curve, dataset_idx, learner_idx in
+                zip(sampled_orig_indices, sampled_curves, sampled_dataset_indices, sampled_learner_indices)
+            ]
+
+            # Process curves in parallel
+            with ProcessPoolExecutor(max_workers=n_workers) as executor:
+                future_to_idx = {
+                    executor.submit(evaluate_single_curve_with_metadata, args): args[0]
+                    for args in args_list
+                }
+
+                cutoff_results = []
+                completed = 0
+
+                for future in as_completed(future_to_idx):
+                    curve_idx, results = future.result()
+                    completed += 1
+
+                    # Add scenario information to results
+                    for result in results:
+                        result['Scenario'] = scenario_name
+
+                    if completed % 50 == 0:
+                        print(f"    Completed {completed}/{len(args_list)} curves")
+
+                    cutoff_results.extend(results)
+
+                all_results.extend(cutoff_results)
+                print(f"    Completed {scenario_name} {cutoff_pct * 100:.0f}% - {len(cutoff_results)} results")
+
+    return pd.DataFrame(all_results)
 
 sample_size = 1000
 
@@ -813,7 +782,7 @@ else:
     np.random.seed(SEED)
     torch.cuda.manual_seed(SEED)
     torch.manual_seed(SEED)
-    results_df = evaluate_all_curves_with_metadata(
+    results_df = evaluate_all_curves_with_metadata_per_scenario(
         curves=test_curves,
         dataset_indices=test_dataset_indices,
         learner_indices=test_learner_indices,
@@ -821,7 +790,7 @@ else:
         lcpfn_model=model,
         min_points=15,
         cutoff_percentages=[0.1, 0.3, 0.5, 0.7, 0.9],
-        sample_size=sample_size,
+        sample_size_per_scenario=sample_size,
         n_workers=14  # Use 14 workers for 16 CPU allocation
     )
 
