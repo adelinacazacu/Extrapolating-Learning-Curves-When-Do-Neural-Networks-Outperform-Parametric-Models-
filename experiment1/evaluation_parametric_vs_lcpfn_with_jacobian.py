@@ -90,7 +90,7 @@ for i in range(test_data_KDKL.shape[0]):
     curve = test_data_KDKL[i, 0, :]
     curve_length = np.count_nonzero(~np.isnan(curve))
 
-    if curve_length == 80:
+    if curve_length > 0:
         test_KDKL_curves.append(curve)
         test_KDKL_curve_lengths.append(curve_length)
 
