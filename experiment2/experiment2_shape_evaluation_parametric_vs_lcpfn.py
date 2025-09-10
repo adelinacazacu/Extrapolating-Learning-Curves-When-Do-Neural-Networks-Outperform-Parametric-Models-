@@ -608,14 +608,13 @@ def evaluate_single_curve_shape(args):
         return idx, None
 
 
-def evaluate_extrapolations(curve_idx, data, anchor_sizes, lcpfn_model, min_points=10,
+def evaluate_extrapolations(curve, anchor_sizes, lcpfn_model, min_points=10,
                            random_cutoff=True, fixed_cutoff_idx=None, cutoff_percentage=None):
     """
     Evaluate extrapolations of a learning curve using LC-PFN and parametric models.
 
     Args:
-        curve_idx: Index of the learning curve to use
-        data: Array of learning curves
+        curve: learning curve to use
         anchor_sizes: Training sizes corresponding to the curve points
         lcpfn_model: Trained LC-PFN model
         min_points: Minimum number of points to use for fitting
@@ -626,10 +625,6 @@ def evaluate_extrapolations(curve_idx, data, anchor_sizes, lcpfn_model, min_poin
     Returns:
         Dictionary with SMAPE and MASE metrics for each model
     """
-
-    curve = data[curve_idx].flatten()
-    valid_mask = np.isfinite(curve)
-    curve = curve[valid_mask]
 
     if len(curve) <= min_points:
         return None
