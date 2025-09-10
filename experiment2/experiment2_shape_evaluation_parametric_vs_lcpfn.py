@@ -693,7 +693,7 @@ else:
         min_points=15,
         cutoff_percentages=[0.1, 0.3, 0.5, 0.7, 0.9],
         sample_size_per_scenario=sample_size,
-        n_workers=14  # Use 14 workers for 16 CPU allocation
+        n_workers=16  # Use 14 workers for 16 CPU allocation
     )
 
 results_df.to_csv(file_path, index=False)

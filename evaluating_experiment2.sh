@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --partition=general --qos=short
 #SBATCH --time=3:00:00
-#SBATCH --mincpus=16
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=16GB
 
 #SBATCH --job-name=paralleleval
 #SBATCH --output=out_paralleleval_%A_%a.txt
 #SBATCH --error=err_paralleleval_%A_%a.txt
-#SBATCH --array=42-46
+#SBATCH --array=42-42
 
 ulimit -n 65536
 echo "File descriptor limit set to: $(ulimit -n)"
