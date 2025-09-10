@@ -641,62 +641,9 @@ def compare_multiple_curves(data_indices, data, anchor_sizes, lcpfn_model, min_p
 
     return df, avg_metrics
 
-
-# In[42]:
-
-
 print(evaluate_extrapolations(102, test_data_UL, anchor_sizes=ANCHOR_SIZE, lcpfn_model=model, min_points=25))
 
-
-# In[43]:
-
-
 CUTOFF_PERCENTAGES = [0.1, 0.3, 0.5, 0.7, 0.9]
-
-def collect_metrics_for_all_scenarios_with_cutoffs(min_points=25, sample_size=500):
-
-    all_results = []
-
-    scenarios = {
-        'KDKL': test_data_KDKL,
-        'UD': test_data_UD,
-        'UL': test_data_UL,
-        'UDUL': test_data_UDUL
-    }
-
-    for scenario_name, data in scenarios.items():
-        for cutoff_pct in CUTOFF_PERCENTAGES:
-            if len(data) > sample_size:
-                indices = random.sample(range(len(data)), sample_size)
-            else:
-                indices = range(len(data))
-
-            print(f"Processing {scenario_name} scenario with {cutoff_pct*100:.0f}% cutoff ({len(indices)} curves)...")
-
-            for idx in tqdm(indices):
-                metrics = evaluate_extrapolations(
-                    idx, data, ANCHOR_SIZE, model,
-                    min_points=min_points,
-                    random_cutoff=False,
-                    cutoff_percentage=cutoff_pct
-                )
-
-                if metrics is not None:
-                    for model_name, values in metrics.items():
-                        row = {
-                            'Model': model_name,
-                            'Scenario': scenario_name,
-                            'Cutoff_Percentage': cutoff_pct,
-                            'Scenario_Cutoff': f"{scenario_name}_{cutoff_pct*100:.0f}%"
-                        }
-                        row.update(values)
-                        all_results.append(row)
-
-    return pd.DataFrame(all_results)
-
-
-# In[ ]:
-
 
 def evaluate_single_curve(args):
     """

@@ -416,10 +416,6 @@ def extrapolate_parametric(curve, anchor_sizes, model="MMF4", min_points=10,
 
     return x_train, y_train, x_test, y_test, y_pred
 
-
-# In[40]:
-
-
 def compare_extrapolations(curve_idx, data, anchor_sizes, lcpfn_model, min_points=10,
                           random_cutoff=True, fixed_cutoff_idx=None, cutoff_percentage=None):
     """
@@ -505,18 +501,11 @@ def compare_extrapolations(curve_idx, data, anchor_sizes, lcpfn_model, min_point
 
     return fig
 
-
-# In[41]:
-
-
 fig = compare_extrapolations(curve_idx=320, data=test_curves, anchor_sizes=ANCHOR_SIZE, lcpfn_model=model, cutoff_percentage=0.8)
 plt.show()
 
 
 # ## Performance Evaluation Metrics
-
-# In[42]:
-
 
 def calculate_smape(y_true, y_pred):
     denominator = np.abs(y_true) + np.abs(y_pred)
@@ -527,140 +516,6 @@ def calculate_mae(y_true, y_pred):
 
 def calculate_mse(y_true, y_pred):
     return np.mean((y_true - y_pred) ** 2)
-
-
-# In[43]:
-
-
-def evaluate_extrapolations_with_metadata(curve_idx, curve, dataset_idx, learner_idx, anchor_sizes,
-                                        lcpfn_model, min_points=10, random_cutoff=True,
-                                        fixed_cutoff_idx=None, cutoff_percentage=None):
-    """
-    Evaluate extrapolations of a learning curve using LC-PFN and parametric models,
-    keeping track of dataset and learner metadata.
-
-    Args:
-        curve_idx: Index of the learning curve in the original data
-        curve: The learning curve data
-        dataset_idx: Index of the dataset this curve comes from
-        learner_idx: Index of the learner this curve comes from
-        anchor_sizes: Training sizes corresponding to the curve points
-        lcpfn_model: Trained LC-PFN model
-        min_points: Minimum number of points to use for fitting
-        random_cutoff: If True, uses a random cutoff point
-        fixed_cutoff_idx: If provided, uses this specific cutoff index instead of generating a random one
-        cutoff_percentage: If provided, uses this percentage of the curve for training
-
-    Returns:
-        List of dictionaries with metrics and metadata for each model
-    """
-
-    curve_flat = curve.flatten()
-    valid_mask = np.isfinite(curve_flat)
-    curve_clean = curve_flat[valid_mask]
-
-    if len(curve_clean) <= min_points:
-        return []
-
-    curve_anchor_sizes = anchor_sizes[:len(curve_clean)]
-
-    if cutoff_percentage is not None:
-        cutoff_idx = max(min_points, int(cutoff_percentage * len(curve_clean)))
-        cutoff_idx = min(cutoff_idx, len(curve_clean) - 1)
-    elif fixed_cutoff_idx is not None:
-        cutoff_idx = fixed_cutoff_idx
-    elif random_cutoff:
-        cutoff_idx = random.randint(min_points, len(curve_clean) - 1)
-    else:
-        cutoff_idx = len(curve_clean) - 1
-
-    # LC-PFN extrapolation
-    x_train_pfn, y_train_pfn, x_test_pfn, y_test_pfn, pred_mean, _, _ = extrapolate_lcpfn(
-        curve_clean, anchor_sizes, lcpfn_model, min_points=min_points,
-        random_cutoff=False, fixed_cutoff_idx=cutoff_idx
-    )
-
-    results = []
-    if x_train_pfn is not None:
-        smape = calculate_smape(y_test_pfn, pred_mean)
-        mae = calculate_mae(y_test_pfn, pred_mean)
-        mse = calculate_mse(y_test_pfn, pred_mean)
-
-        results.append({
-            'Curve_idx': curve_idx,
-            'Dataset_idx': dataset_idx,
-            'Learner_idx': learner_idx,
-            'Learner_name': LEARNER_ZOO[learner_idx],
-            'Model': 'LC-PFN',
-            'SMAPE': smape,
-            'MAE': mae,
-            'MSE': mse,
-            'Cutoff_idx': cutoff_idx,
-            'Cutoff_percentage': cutoff_percentage,
-            'Train_points': len(x_train_pfn),
-            'Test_points': len(y_test_pfn)
-        })
-
-    # Parametric model extrapolations
-    for model_name in ["MMF4", "WBL4", "POW4"]:
-        result = extrapolate_parametric(
-            curve_clean, anchor_sizes, model_name, min_points=min_points,
-            random_cutoff=False, fixed_cutoff_idx=cutoff_idx
-        )
-
-        if result[0] is not None:
-            x_train, y_train, x_test, y_test, y_pred_full = result
-            y_pred_test = y_pred_full[cutoff_idx:]
-
-            smape = calculate_smape(y_test, y_pred_test)
-            mae = calculate_mae(y_test, y_pred_test)
-            mse = calculate_mse(y_test, y_pred_test)
-
-            results.append({
-                'Curve_idx': curve_idx,
-                'Dataset_idx': dataset_idx,
-                'Learner_idx': learner_idx,
-                'Learner_name': LEARNER_ZOO[learner_idx],
-                'Model': model_name,
-                'SMAPE': smape,
-                'MAE': mae,
-                'MSE': mse,
-                'Cutoff_idx': cutoff_idx,
-                'Cutoff_percentage': cutoff_percentage,
-                'Train_points': len(x_train),
-                'Test_points': len(y_test)
-            })
-
-    return results
-
-
-# In[44]:
-
-
-def evaluate_single_curve_with_metadata(args):
-    """
-    Wrapper function for evaluating a single curve with metadata.
-    Needed for parallel processing to unpack arguments properly.
-    """
-    (curve_idx, curve, dataset_idx, learner_idx, anchor_sizes, model,
-     min_points, cutoff_percentage) = args
-
-    try:
-        results = evaluate_extrapolations_with_metadata(
-            curve_idx=curve_idx,
-            curve=curve,
-            dataset_idx=dataset_idx,
-            learner_idx=learner_idx,
-            anchor_sizes=anchor_sizes,
-            lcpfn_model=model,
-            min_points=min_points,
-            random_cutoff=False,
-            cutoff_percentage=cutoff_percentage
-        )
-        return curve_idx, results
-    except Exception as e:
-        print(f"Error processing curve {curve_idx}: {e}")
-        return curve_idx, []
 
 
 def evaluate_all_curves_with_metadata_per_scenario(anchor_sizes, lcpfn_model,
@@ -739,7 +594,7 @@ def evaluate_single_curve_shape(args):
     try:
         curve = curves[idx]
 
-        results = evaluate_extrapolations_simple(
+        results = evaluate_extrapolations(
             curve=curve,
             anchor_sizes=anchor_sizes,
             lcpfn_model=lcpfn_model,
@@ -753,55 +608,68 @@ def evaluate_single_curve_shape(args):
         return idx, None
 
 
-def evaluate_extrapolations_simple(curve, anchor_sizes, lcpfn_model, min_points=15, cutoff_percentage=None):
+def evaluate_extrapolations(curve_idx, data, anchor_sizes, lcpfn_model, min_points=10,
+                           random_cutoff=True, fixed_cutoff_idx=None, cutoff_percentage=None):
+    """
+    Evaluate extrapolations of a learning curve using LC-PFN and parametric models.
 
-    curve_flat = curve.flatten()
-    valid_mask = np.isfinite(curve_flat)
-    curve_clean = curve_flat[valid_mask]
+    Args:
+        curve_idx: Index of the learning curve to use
+        data: Array of learning curves
+        anchor_sizes: Training sizes corresponding to the curve points
+        lcpfn_model: Trained LC-PFN model
+        min_points: Minimum number of points to use for fitting
+        random_cutoff: If True, uses a random cutoff point
+        fixed_cutoff_idx: If provided, uses this specific cutoff index instead of generating a random one
+        cutoff_percentage: If provided, uses this percentage of the curve for training
 
-    if len(curve_clean) <= min_points:
+    Returns:
+        Dictionary with SMAPE and MASE metrics for each model
+    """
+
+    curve = data[curve_idx].flatten()
+    valid_mask = np.isfinite(curve)
+    curve = curve[valid_mask]
+
+    if len(curve) <= min_points:
         return None
 
-    cutoff_idx = max(min_points, int(cutoff_percentage * len(curve_clean)))
-    cutoff_idx = min(cutoff_idx, len(curve_clean) - 1)
+    curve_anchor_sizes = anchor_sizes[:len(curve)]
 
-    results = {}
+    if cutoff_percentage is not None:
+        cutoff_idx = max(min_points, int(cutoff_percentage * len(curve)))
+        cutoff_idx = min(cutoff_idx, len(curve) - 1)
+    elif fixed_cutoff_idx is not None:
+        cutoff_idx = fixed_cutoff_idx
+    elif random_cutoff:
+        cutoff_idx = random.randint(min_points, len(curve) - 1)
+    else:
+        cutoff_idx = len(curve) - 1
 
-    # LC-PFN extrapolation
     x_train_pfn, y_train_pfn, x_test_pfn, y_test_pfn, pred_mean, _, _ = extrapolate_lcpfn(
-        curve_clean, anchor_sizes, lcpfn_model, min_points=min_points,
+        curve, anchor_sizes, lcpfn_model, min_points=min_points,
         random_cutoff=False, fixed_cutoff_idx=cutoff_idx
     )
 
-    if x_train_pfn is not None:
-        results['LC-PFN'] = {
-            'SMAPE': calculate_smape(y_test_pfn, pred_mean),
-            'MAE': calculate_mae(y_test_pfn, pred_mean),
-            'MSE': calculate_mse(y_test_pfn, pred_mean),
-            'Train_points': len(x_train_pfn),
-            'Test_points': len(y_test_pfn)
-        }
-
-    # Parametric model extrapolations
+    results = {'LC-PFN': (y_test_pfn, pred_mean, y_train_pfn)}
     for model_name in ["MMF4", "WBL4", "POW4"]:
         result = extrapolate_parametric(
-            curve_clean, anchor_sizes, model_name, min_points=min_points,
+            curve, anchor_sizes, model_name, min_points=min_points,
             random_cutoff=False, fixed_cutoff_idx=cutoff_idx
         )
-
         if result[0] is not None:
             x_train, y_train, x_test, y_test, y_pred_full = result
             y_pred_test = y_pred_full[cutoff_idx:]
+            results[model_name] = (y_test, y_pred_test, y_train)
 
-            results[model_name] = {
-                'SMAPE': calculate_smape(y_test, y_pred_test),
-                'MAE': calculate_mae(y_test, y_pred_test),
-                'MSE': calculate_mse(y_test, y_pred_test),
-                'Train_points': len(x_train),
-                'Test_points': len(y_test)
-            }
+    metrics = {}
+    for model_name, (y_true, y_pred, y_train) in results.items():
+        smape = calculate_smape(y_true, y_pred)
+        mae = calculate_mae(y_true, y_pred)
+        mse = calculate_mse(y_true, y_pred)
+        metrics[model_name] = {'SMAPE': smape, 'MAE': mae, 'MSE': mse}
 
-    return results if results else None
+    return metrics
 
 sample_size = 1000
 
