@@ -7,7 +7,7 @@
 #SBATCH --job-name=paralleleval
 #SBATCH --output=out_paralleleval_%A_%a.txt
 #SBATCH --error=err_paralleleval_%A_%a.txt
-#SBATCH --array=42-42
+#SBATCH --array=43-46
 
 ulimit -n 65536
 echo "File descriptor limit set to: $(ulimit -n)"
