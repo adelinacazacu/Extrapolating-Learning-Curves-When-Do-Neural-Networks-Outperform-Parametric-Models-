@@ -169,9 +169,10 @@ def extrapolate_lcpfn(curve, anchor_sizes, model, min_points=10, qs=[0.05, 0.5, 
         pred_upper: Upper prediction interval
     """
 
+    curve_anchor_sizes = anchor_sizes[:len(curve)]
     valid_mask = np.isfinite(curve)
     valid_curve = curve[valid_mask]
-    valid_anchors = anchor_sizes[:len(curve)][valid_mask]
+    valid_anchors = curve_anchor_sizes[valid_mask]
 
     if len(valid_curve) <= min_points:
         return None, None, None, None, None, None, None
@@ -338,10 +339,11 @@ def extrapolate_parametric(curve, anchor_sizes, model="MMF4", min_points=10,
         y_test: Test y values (ground truth)
         y_pred: Predicted values for full curve
     """
-    # Remove NaN values
+
+    curve_anchor_sizes = anchor_sizes[:len(curve)]
     valid_mask = np.isfinite(curve)
     valid_curve = curve[valid_mask]
-    valid_anchors = anchor_sizes[:len(valid_curve)][valid_mask]
+    valid_anchors = curve_anchor_sizes[valid_mask]
 
     if len(valid_curve) <= min_points:
         return None, None, None, None, None
