@@ -19,24 +19,29 @@ os.environ['NUMBA_NUM_THREADS'] = '16'
 print("4")
 
 import h5py
+print("h5py")
 import numpy as np
+print("np")
 import torch
+print("torch")
 import random
+print("random")
 import matplotlib.pyplot as plt
+print("plt")
 import pandas as pd
-import seaborn as sns
-from matplotlib.colors import LinearSegmentedColormap
-from math import pi
-import matplotlib.patheffects as path_effects
+print("pd")
 from scipy.optimize import curve_fit
+print("curve_fit")
 from sklearn.model_selection import train_test_split
+print("train_test_split")
 from pathlib import Path
-from tqdm import tqdm
+print("Path")
 import warnings
+print("warnings")
 warnings.filterwarnings('ignore')
 
 import lcpfn
-from lcpfn import bar_distribution, encoders, train, utils
+from lcpfn import utils
 print("5")
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=42, help='Random seed')
