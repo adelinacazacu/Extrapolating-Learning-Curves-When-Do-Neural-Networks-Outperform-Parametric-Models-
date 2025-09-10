@@ -635,6 +635,7 @@ def evaluate_extrapolations(curve, anchor_sizes, lcpfn_model, min_points=10,
     if len(curve) <= min_points:
         return None
 
+    curve = np.array(curve).flatten()
     curve_anchor_sizes = anchor_sizes[:len(curve)]
 
     if cutoff_percentage is not None:
@@ -648,14 +649,14 @@ def evaluate_extrapolations(curve, anchor_sizes, lcpfn_model, min_points=10,
         cutoff_idx = len(curve) - 1
 
     x_train_pfn, y_train_pfn, x_test_pfn, y_test_pfn, pred_mean, _, _ = extrapolate_lcpfn(
-        curve, anchor_sizes, lcpfn_model, min_points=min_points,
+        curve, curve_anchor_sizes, lcpfn_model, min_points=min_points,
         random_cutoff=False, fixed_cutoff_idx=cutoff_idx
     )
 
     results = {'LC-PFN': (y_test_pfn, pred_mean, y_train_pfn)}
     for model_name in ["MMF4", "WBL4", "POW4"]:
         result = extrapolate_parametric(
-            curve, anchor_sizes, model_name, min_points=min_points,
+            curve, curve_anchor_sizes, model_name, min_points=min_points,
             random_cutoff=False, fixed_cutoff_idx=cutoff_idx
         )
         if result[0] is not None:
