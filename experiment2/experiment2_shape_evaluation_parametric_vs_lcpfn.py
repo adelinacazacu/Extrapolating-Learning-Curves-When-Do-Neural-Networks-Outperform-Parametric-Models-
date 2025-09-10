@@ -2,6 +2,15 @@
 # coding: utf-8
 import argparse
 
+import os
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import multiprocessing as mp
+from functools import partial
+
+os.environ['OMP_NUM_THREADS'] = '16'
+os.environ['MKL_NUM_THREADS'] = '16'
+os.environ['NUMBA_NUM_THREADS'] = '16'
+
 # # Evaluation Notebook - LC-PFN vs. Parametric Models
 # ### Comparative experiment: Flat vs non-Flat, Monotone & Convex vs non-Monotone & Convex, Peaking vs non-Peaking, Dipping vs non-Dipping
 
@@ -27,15 +36,6 @@ warnings.filterwarnings('ignore')
 
 import lcpfn
 from lcpfn import bar_distribution, encoders, train, utils
-
-import os
-from concurrent.futures import ProcessPoolExecutor, as_completed
-import multiprocessing as mp
-from functools import partial
-
-os.environ['OMP_NUM_THREADS'] = '16'
-os.environ['MKL_NUM_THREADS'] = '16'
-os.environ['NUMBA_NUM_THREADS'] = '16'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=42, help='Random seed')
