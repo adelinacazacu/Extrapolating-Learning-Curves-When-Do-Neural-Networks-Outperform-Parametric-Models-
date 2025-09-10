@@ -3,7 +3,7 @@
 #SBATCH --time=4:00:00
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=16GB
-#SBATCH --nodelist=gpu14
+#SBATCH --nodelist=influ5
 
 #SBATCH --job-name=paralleleval
 #SBATCH --output=out_paralleleval_%A_%a.txt
