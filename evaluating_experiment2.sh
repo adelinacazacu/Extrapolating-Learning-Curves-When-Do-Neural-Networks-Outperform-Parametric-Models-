@@ -3,12 +3,11 @@
 #SBATCH --time=4:00:00
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=16GB
-#SBATCH --nodelist=influ5
 
 #SBATCH --job-name=paralleleval
 #SBATCH --output=out_paralleleval_%A_%a.txt
 #SBATCH --error=err_paralleleval_%A_%a.txt
-#SBATCH --array=44-46
+#SBATCH --array=42-46
 
 ulimit -n 65536
 echo "File descriptor limit set to: $(ulimit -n)"
