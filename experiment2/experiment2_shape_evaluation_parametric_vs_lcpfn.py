@@ -613,12 +613,13 @@ def evaluate_extrapolations(curve, anchor_sizes, lcpfn_model, min_points=10,
     Returns:
         Dictionary with SMAPE and MASE metrics for each model
     """
+    curve = np.array(curve).flatten()
+    curve_anchor_sizes = anchor_sizes[:len(curve)]
+    valid_mask = np.isfinite(curve)
+    curve = curve[valid_mask]
 
     if len(curve) <= min_points:
         return None
-
-    curve = np.array(curve).flatten()
-    curve_anchor_sizes = anchor_sizes[:len(curve)]
 
     if cutoff_percentage is not None:
         cutoff_idx = max(min_points, int(cutoff_percentage * len(curve)))
